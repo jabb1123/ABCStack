@@ -4,10 +4,12 @@ In order to facilitate the communication between class, the following Network la
 #### Addressing Scheme
 Each Nework layer "IP" address consists of two fields each with values A-Z, 0-9. The first field refers to a LAN address and the second to a specific computer within that LAN. Each team's LAN has a letter associated with it, assigned as follows:
 
-A - Team ABC
-B - Team ??, Currently known as the Interro-terro-bang-bangs
-C - Team #GPI-Joes
-D - Team Blinkblink
+<ul>
+	<li>A - Team ABC</li>
+	<li>B - Team ??, Currently known as the Interro-terro-bang-bangs</li>
+	<li>C - Team #GPI-Joes</li>
+	<li>D - Team Blinkblink</li>
+</ul>
 
 Addressing example: If Alex were a part of team ABC, part Alex's Raspberry Pi would be situated on LAN A. The team would designate a character A-Z or 0-9 uniquely to his Pi. For example, if it is the fourth Pi on the network, it would most likely be designated 'D'. Therefore to send a message to Alex's Pi, regardless of the sender's location in the network, the message would be addressed to 'AD' at the network layer.
 
@@ -16,12 +18,12 @@ In order to standardize the packets sent over the network so that a router on an
 
 <table>
 	<tr>
-		<td>Source Address (2 fields, Alphanumeric)</td>
-		<td>Destination Address (2 fields, Alphanumeric)</td>
-		<td>Source Port (2 fields, Numeric)</td>
-		<td>Destination Port (2 fields, Numeric)</td>
-		<td>Payload (Variable length, Alphanumeric)</td>
-		<td>Checksum (2 fields, hexidecimal)</td>
+		<td>**Source Address** (2 fields, Alphanumeric)</td>
+		<td>**Destination Address** (2 fields, Alphanumeric)</td>
+		<td>**Source Port** (2 fields, Numeric)</td>
+		<td>**Destination Port** (2 fields, Numeric)</td>
+		<td>**Payload** (Variable length, Alphanumeric)</td>
+		<td>**Checksum** (2 fields, hexidecimal)</td>
 	</tr>
 </table>
 
