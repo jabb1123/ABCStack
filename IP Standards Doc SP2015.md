@@ -18,12 +18,12 @@ In order to standardize the packets sent over the network so that a router on an
 
 <table>
 	<tr>
-		<td>**Source Address** (2 fields, Alphanumeric)</td>
-		<td>**Destination Address** (2 fields, Alphanumeric)</td>
-		<td>**Source Port** (2 fields, Numeric)</td>
-		<td>**Destination Port** (2 fields, Numeric)</td>
-		<td>**Payload** (Variable length, Alphanumeric)</td>
-		<td>**Checksum** (2 fields, hexidecimal)</td>
+		<td><strong>Source Address</strong> (2 fields, Alphanumeric)</td>
+		<td><strong>Destination Address</strong> (2 fields, Alphanumeric)</td>
+		<td><strong>Source Port</strong> (2 fields, Numeric)</td>
+		<td><strong>Destination Port</strong> (2 fields, Numeric)</td>
+		<td><strong>Payload</strong> (Variable length, Alphanumeric)</td>
+		<td><strong>Checksum</strong> (2 fields, hexidecimal)</td>
 	</tr>
 </table>
 
