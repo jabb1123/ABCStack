@@ -18,15 +18,15 @@ class Euler(primetools):
     """ 
 Introduction to Euler's totient function, also called  (phi).
 
- φ(d) To compute the totient of d, count the rational numbers n/d
+ phi(d) To compute the totient of d, count the rational numbers n/d
     in the domain 1/d to d/d that are not in lowest terms.
-    For φ(4) we consider 1/4, 2/4, 3/4 and 4/4.  2/4 and 4/4 can be
+    For phi(4) we consider 1/4, 2/4, 3/4 and 4/4.  2/4 and 4/4 can be
     can be reduced 1/2 and 1; The two rational numbers 1/4 and 3/4 cannot
     be reduced,  so the totient of 4 is 2.  The totient of a prime p is p-1,
     since all of the rational numbers less than p are irreducible.  For example,
-    1/5, 2/5, 3/5, 4/5 are irreducible, so φ(5) is 4.
+    1/5, 2/5, 3/5, 4/5 are irreducible, so phi(5) is 4.
     
-    We provide two Python algorithms for φ(d): totient_by_gcd and totient_by_coprimes.
+    We provide two Python algorithms for phi(d): totient_by_gcd and totient_by_coprimes.
 
   
   
