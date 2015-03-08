@@ -91,7 +91,7 @@ The RSA package has the following modules and class hierarchy.
 class RSA(Euler.Euler):
     """ RSA Encryption algorithm per Wikipedia - 1 April 2014 """
     def __init__(self,*T,**D): # set level 0 assumptions
-        super().__init__(*T,**D)
+        Euler.Euler.__init__(self,*T,**D)
         
 
     def from_message_bit_length(self,message_bit_length=8,opt=0):
@@ -153,7 +153,7 @@ RSA methods for hosts with public key = (pq,e)
 
 encrypt,
   which encrypts a message which can only be decoded by the
-  decrypt method of the matching instantiation of the RSA_private key class.
+  decrypt method of the same instance of an RSA object.
 
 authenticate,
   which can validate a signature created which could only have been created
@@ -183,7 +183,7 @@ encrypt: converts cleartext to RSA cyphertext for cleartext and signature authen
 for Olin spring semester Computer Networks class
     """
     def __init__(self,pq,e,*T,**D):
-        super().__init__(*T,**D)
+        Euler.Euler.__init__(self,*T,**D)
         
         """Instantiate instance of RSA public key class with public key
 (pq,e).  The methods available in the public key class are:
@@ -248,7 +248,7 @@ Private Key instance: decryption of received cybertext and signing of cleartext 
     """
     def __init__(self,p,q,e,opt=0,*T,**D):
         print("{}.__init__({},{}.{},{},{},{}".format(self,p,q,e,opt,T,D))
-        super().__init__(*T,**D)
+        Euler.Euler.__init__(self,*T,**D)
         """
 Initialize private key operations by computing the decryption key and
 choosing a decryption algorithm.
