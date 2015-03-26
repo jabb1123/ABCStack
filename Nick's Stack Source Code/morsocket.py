@@ -50,6 +50,8 @@ class socket(sb.socketbase):
         }
         
         super().__init__(network_protocol, transport_protocol) 
+        
+        self.sock = sb.CN_Socket(2, 2)
         threading.Thread(target=self._internal_recv).start()
         self.sock.sendto(serialize("register"), _MORSOCK_SERVER_ADDR)
         

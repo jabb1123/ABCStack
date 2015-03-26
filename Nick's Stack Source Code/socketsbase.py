@@ -9,7 +9,6 @@ implemented by the teams.
 
 """
 
-
 # ----- IMPORTS ------ #
 from abc import ABCMeta, abstractmethod
 import socket
@@ -32,10 +31,9 @@ class socketbase:
     __metaclass__ = ABCMeta
 
     def __init__ (self, network_protocol=AF_INET, transport_protocol=SOCK_DGRAM):
-        self.sock = CN_Socket(2, 2)
         self.network_protocol = network_protocol
         self.transport_protocol = transport_protocol
-        self._timeout = 0;
+        self.timeout = 0;
     
     def __enter__ (self):
         return self
@@ -43,7 +41,6 @@ class socketbase:
     def __exit__ (self, argException, argString, argTraceback):
         # If your stack requires you to exit it gracefully, you
         # may want to override this method
-        self.sock.close()
         return False # Don't suppress exceptions, True suppresses
 
     @abstractmethod
@@ -63,7 +60,7 @@ class socketbase:
         self.timeout = timeout
 
     def gettimeout (self):
-        return self._timeout
+        return self.timeout
 
 
 # ----- SOCKETS BASE UTILITY FUNCTIONS ----- #
