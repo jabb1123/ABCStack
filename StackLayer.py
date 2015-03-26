@@ -5,8 +5,8 @@ class StackLayer(object):
 
 @abstractmethod
 def pass_up ():
-    pass
+    raise Exception('pass_up is not implemented!')
 
 @abstractmethod
 def pass_down ():
-    pass
+    raise Exception('pass_down is not implemented!')
