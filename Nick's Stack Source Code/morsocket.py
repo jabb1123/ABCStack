@@ -52,14 +52,21 @@ class socket(sb.socketbase):
         super().__init__(network_protocol, transport_protocol) 
         
         self.sock = sb.CN_Socket(2, 2)
-        threading.Thread(target=self._internal_recv).start()
-        self.sock.sendto(serialize("register"), _MORSOCK_SERVER_ADDR)
+        self.recv_thread = threading.Thread(target=self._internalRecv)
+        self.recv_thread.start()
         
-    def _internal_recv(self):
+        # Register this process with the morsockserver
+        self._sendCmd("register")
+        
+    def _internalRecv(self):
         while True:
             data, addr = self.sock.recvfrom(8192)
             data = deserialize(data)
             self.CMD_MAP[data["instruction"]](**data["params"])
+            
+    def _sendCmd(self, instruction, params={}):
+        serialized = serialize(instruction, params)
+        self.sock.sendto(serialized, _MORSOCK_SERVER_ADDR)
             
     def _enqueueMessage(self, message, addr):
         self.msg_queue.put((message, addr))
@@ -68,25 +75,29 @@ class socket(sb.socketbase):
         raise Exception(desc)
         
     def bind (self, addr):
-        serialized = serialize("bind", {
-                "request_addr": addr
+        self._sendCmd("bind", {"request_addr": addr})
+        
+    def close(self):
+        self._sendCmd("close")
+        
+    def sendto (self, message, dest_address):
+        self._sendCmd("sendto", {
+                "message": forcedecode(message),
+                "dest_addr": dest_address
             })
-                
-        self.sock.sendto(serialized, _MORSOCK_SERVER_ADDR)
-    
+
     def recvfrom (self, bufsize):
         try:
             return self.msg_queue.get(True, self.timeout)
         except queue.Empty:
             raise TimeoutException("Socket recvfrom operation timed out.")
+            
+    def __exit__ (self):
+        self.sock.close()
+        super().__exit__()
+        
     
-    def sendto (self, message, address):
-        serialized = serialize("sendto", {
-                "message": forcedecode(message),
-                "address": address
-            })
-                
-        self.sock.sendto((serialized), _MORSOCK_SERVER_ADDR)
+
         
 class socketserver (StackLayer):
     
@@ -118,7 +129,7 @@ class socketserver (StackLayer):
         """
         pass
         
-    def passDown (self, message, addr):
+    def passDown (self, message, addr, dest_addr):
         """
         Sequence data into a layer 3+4 packet and pass down the stack.
         """
@@ -174,7 +185,8 @@ def serialize (instruction, parameters={}):
         {"instruction": instruction,
          "params": parameters
         }).encode('utf-8')
-    
+        
+
 def deserialize (serialized):
     return json.loads(serialized.decode('utf-8'))
     
