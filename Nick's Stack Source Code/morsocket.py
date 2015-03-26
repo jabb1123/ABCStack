@@ -92,9 +92,10 @@ class socket(sb.socketbase):
         except queue.Empty:
             raise TimeoutException("Socket recvfrom operation timed out.")
             
-    def __exit__ (self):
+    def __exit__ (self, argException, argString, argTraceback):
+        self.close()
         self.sock.close()
-        super().__exit__()
+        super().__exit__(argException, argString, argTraceback)
         
     
 
@@ -108,7 +109,8 @@ class socketserver (StackLayer):
         self.CMD_MAP = {
             "sendto" : self.passDown,
             "bind" : self.bind,
-            "register" : self.register
+            "register" : self.register,
+            "close" : self.close
         }
         
         with sb.CN_Socket(2, 2) as self.sock:
@@ -148,7 +150,8 @@ class socketserver (StackLayer):
         elif request_addr[1] > _PORT_CAP:
             exception = "Port number out of range. Ports numbers must be >0 and <{}".format(_PORT_CAP)
         else:
-            self.port_map[addr[1]] = request_addr[1]
+            del self.port_map[addr[1]]  # Clear old port reservation
+            self.port_map[addr[1]] = request_addr[1]  # Reserve new port
             if self.verbose: print("Process on OS port {} bound to morse port {}".format(addr[1], request_addr[1]))
             return
         
@@ -177,7 +180,10 @@ class socketserver (StackLayer):
         # If no ports are available, forward an exception to the requesting client
         self.sendException("No ports available", addr)
         
-    def sendException(self, desc, addr):
+    def close (self, addr):
+        del self.port_map[addr[1]]  # Close port reservation
+    
+    def sendException (self, desc, addr):
         self.sock.sendto(serialize("exception", {"desc": desc}), addr)
         
 def serialize (instruction, parameters={}):
