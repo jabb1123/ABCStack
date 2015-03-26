@@ -12,6 +12,7 @@ implemented by the teams.
 
 # ----- IMPORTS ------ #
 from abc import ABCMeta, abstractmethod
+import socket
 
 
 # ----- AVAILABLE CONSTANTS ----- #
@@ -27,13 +28,23 @@ _DEF_IP = ['192', '168', '0', '0']
 
 
 # ----- SOCKETS BASE CLASS ----- #
-class socket:
+class socketbase:
     __metaclass__ = ABCMeta
 
-    @abstractmethod
     def __init__ (self, network_protocol=AF_INET, transport_protocol=SOCK_DGRAM):
+        self.sock = CN_Socket(2, 2)
+        self.network_protocol = network_protocol
+        self.transport_protocol = transport_protocol
         self._timeout = 0;
-        raise NotImplementedError('__init__() method is not yet implmented!')
+    
+    def __enter__ (self):
+        return self
+        
+    def __exit__ (self, argException, argString, argTraceback):
+        # If your stack requires you to exit it gracefully, you
+        # may want to override this method
+        self.sock.close()
+        return False # Don't suppress exceptions, True suppresses
 
     @abstractmethod
     def bind (self, ip, port=80):
@@ -44,18 +55,18 @@ class socket:
          raise NotImplementedError('recvfrom() method is not yet implmented!')
 
     @abstractmethod
-    def sendto (self, string, message):
+    def sendto (self, message, address):
          raise NotImplementedError('sendto() method is not yet implmented!')
 
     def settimeout (self, timeout):
         if (timeout < 0): raise ValueError('timeout must be nonnegative!')
-        self._timeout = timeout
+        self.timeout = timeout
 
     def gettimeout (self):
         return self._timeout
 
 
-# ----- PRIVATE UTILITY FUNCTIONS ----- #
+# ----- SOCKETS BASE UTILITY FUNCTIONS ----- #
 def _morse2ipv4 (morse_ip):
     """
     Translates a morse IP address (eg. 'R0') to an ipv4 address according to
@@ -84,6 +95,26 @@ def _ipv42morse (ipv4):
 
     ipv4 = ipv4.split('.')
     return chr(int(ipv4[2])) + chr(int(ipv4[3]))
+
+
+# ----- SOCKETS CTRL-C EXTENSION ----- #
+class CN_Socket(socket.socket):
+    """
+    CN_Socket subclasses standard Python 3 socket class 
+    to add support for keyboard interrupt (ctl-C)
+    
+    Written by Alex Morrow, borrowed here
+    """
+    
+    def __exit__(self, argException, argString, argTraceback):
+
+        if argException is KeyboardInterrupt:
+            print (argString)
+            self.close()   # return socket resources on ctl-c keyboard interrupt
+            return True
+        
+        else:  # invoke normal socket context manager __exit__
+            super().__exit__(argException, argString, argTraceback)
 
 
 # ----- TESTING CODE ----- #
