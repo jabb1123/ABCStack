@@ -1,7 +1,7 @@
 from GPIO import *
 from MorseTranslator import *
 from datetime import datetime
-from time import sleep
+import time
 import threading
 import math
 from queue import Queue
@@ -16,12 +16,12 @@ class PhysicalLayer(StackLayer):
         self.receive_rate = 1/1000;
         self.transmit_rate = 1/100;
 
-        prepare_pin(self.input_pin)
+        prepare_pin(self.input_pin) 
         #prepare_pin(self.output_pin, True)
 
         self.reading = False
 
-        self.previous_edge = datetime.now()
+        self.previous_edge = time.time()
         self.current_edge = None
 
         self.pulse_list = []
@@ -34,43 +34,46 @@ class PhysicalLayer(StackLayer):
         
     def edge_found(self, pin):
         # Callback for GPIO edge detect
-        print('Edge Found.')
-
-        self.current_edge = datetime.now()
+        
+        self.current_edge = time.time()
 
         # TODO: verify time delta accuracy
-        time_passed = int(((self.current_edge - self.previous_edge).microseconds)/1000)
-
+        time_passed = self.current_edge - self.previous_edge
+        
         # duration and state of received pulse
-        pulse = (math.ceil(time_passed/self.transmit_rate), GPIO.input(self.input_pin))
+        signal = 0 if GPIO.input(self.input_pin) else 1        
+        pulse = (round(time_passed / self.transmit_rate), signal)
+        print(pulse)
 
         self.previous_edge = self.current_edge
 
         # handle start sequence
-        if (pulse[1] and pulse[0] > 10 and pulse[0] <= 20):
+        if (pulse[1] and pulse[0] > 15 and pulse[0] <= 20):
             # reset queue of pulses for new transmission
             self.pulse_list = []
             self.reading = True
 
         # handle stop sequence
         elif (pulse[1] and pulse[0] >= 30):
-            #self.translate()
             self.receive_queue.put(self.pulse_list)
+            self.translate()
             self.reading = False
 
-        if self.reading:
+        elif self.reading:
             # insert received pulse in queue
             self.pulse_list.append(pulse)
 
     def translate(self):
         # Translate pulses in queue to characters
+        print('Receive Queue: ' + str(layer.receive_queue.get()))
         print('Translating.')
 
     def receive(self):
-        prepare_pin(self.input_pin)
-        print('Receiving.')
-        while True:
-            print(layer.receive_queue.get())
+        pass
+##        prepare_pin(self.input_pin)
+##        print('Receiving.')
+##        while True:
+##            print(layer.receive_queue.get())
             
     def transmit(self, pulses=[(20,1), (1,0), (1,1), (1,0), (40,1)]):
         prepare_pin(self.output_pin, True)
@@ -81,7 +84,8 @@ class PhysicalLayer(StackLayer):
                 turn_low(self.output_pin)
             delay(self.transmit_rate * pulse[0])
         turn_low(self.output_pin)
-    
+        delay(1) # for detecting the last pulse
+
     def pass_up(self):
         with Safeguards():
             self.receive()
@@ -89,15 +93,13 @@ class PhysicalLayer(StackLayer):
     def pass_down(self):
         with Safeguards():
             self.transmit()
-            #thread = threading.Thread(target=self.transmit)
-            #thread.start()
 
 if __name__ == '__main__':
     receive_queue = Queue()
     layer = PhysicalLayer(receive_queue)
     txrx = input('Enter: ')
-    if txrx == 'A':
+    if txrx == 'T':
         layer.pass_up()
-    elif txrx == 'B':
+    elif txrx == 'R':
         layer.pass_down()
-        print(layer.receive_queue.get())
+        
