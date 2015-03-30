@@ -74,13 +74,13 @@ class socket(sb.socketbase):
     def _raiseException(self, desc):
         raise Exception(desc)
         
-    def bind (self, addr):
+    def bind(self, addr):
         self._sendCmd("bind", {"request_addr": addr})
         
     def close(self):
         self._sendCmd("close")
         
-    def sendto (self, message, dest_address):
+    def sendto(self, message, dest_address):
         self._sendCmd("sendto", {
                 "message": forcedecode(message),
                 "dest_addr": dest_address
@@ -102,7 +102,7 @@ class socket(sb.socketbase):
         
 class socketserver (StackLayer):
     
-    def __init__ (self, addr=_MORSOCK_SERVER_ADDR, verbose=False):
+    def __init__(self, addr=_MORSOCK_SERVER_ADDR, verbose=False):
         self.verbose = verbose
         self.port_map = {}
         self.port_counter = 0
@@ -131,14 +131,14 @@ class socketserver (StackLayer):
         """
         pass
         
-    def passDown (self, message, addr, dest_addr):
+    def passDown(self, message, addr, dest_addr):
         """
         Sequence data into a layer 3+4 packet and pass down the stack.
         """
         pass
                 
     
-    def bind (self, request_addr, addr):
+    def bind(self, request_addr, addr):
         """
         Binds a process to the requested (ip, port) address if that combination
         is not already in use by another process. Returns a serialized exception
@@ -158,7 +158,7 @@ class socketserver (StackLayer):
         self.sendException(exception, addr)
             
     
-    def register (self, addr):
+    def register(self, addr):
         """
         Assign a morse port to a process when it starts up. The ports
         are assigned from 0 to _PORT_CAP and will find an available port
@@ -180,20 +180,20 @@ class socketserver (StackLayer):
         # If no ports are available, forward an exception to the requesting client
         self.sendException("No ports available", addr)
         
-    def close (self, addr):
+    def close(self, addr):
         del self.port_map[addr[1]]  # Close port reservation
     
-    def sendException (self, desc, addr):
+    def sendException(self, desc, addr):
         self.sock.sendto(serialize("exception", {"desc": desc}), addr)
         
-def serialize (instruction, parameters={}):
+def serialize(instruction, parameters={}):
     return json.dumps(
         {"instruction": instruction,
          "params": parameters
         }).encode('utf-8')
         
 
-def deserialize (serialized):
+def deserialize(serialized):
     return json.loads(serialized.decode('utf-8'))
     
 def forcedecode (encoded):
