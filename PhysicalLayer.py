@@ -13,8 +13,8 @@ class PhysicalLayer(StackLayer):
 
         self.input_pin = 23
         self.output_pin = 17
-        self.receive_rate = 1/1000;
-        self.transmit_rate = 1/100;
+        self.receive_rate = 1/1200;
+        self.transmit_rate = 1/120;
 
         prepare_pin(self.input_pin)
 
@@ -26,7 +26,7 @@ class PhysicalLayer(StackLayer):
         self.pulse_list = []
         self.receive_queue = receive_queue
 
-        #self.stack = MorseBJStack()
+        self.stack = MorseBJStack()
 
         # detect rising and falling edges
         GPIO.add_event_detect(self.input_pin, GPIO.BOTH, callback=self.edge_found)
@@ -52,18 +52,19 @@ class PhysicalLayer(StackLayer):
 
         # handle stop sequence
         elif (pulse[1] and pulse[0] >= 30):
-            self.receive_queue.put(self.pulse_list)
-            self.translate()
+            translation = self.translate(self.pulse_list)
+            self.receive_queue.put(translation)
             self.reading = False
 
         elif self.reading:
             # insert received pulse in queue
             self.pulse_list.append(pulse)
 
-    def translate(self):
+    def translate(self, pulse_list):
         # Translate pulses in queue to characters
-        print('Receive Queue: ' + str(layer.receive_queue.get()))
-        print('Translating.')
+        message = self.stack.decode(pulse_list)
+        print('Message: ' + message)
+        return message
 
     def transmit(self, pulses=[(20,1), (1,0), (1,1), (1,0), (40,1)]):
         prepare_pin(self.output_pin, True)
