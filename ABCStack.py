@@ -1,9 +1,15 @@
-class ABCStack(object):
-    def __init__(self):
-        return self
+from PhysicalLayer import PhysicalLayer
+from DatalinkLayer import DatalinkLayer
 
-def main():
-    abc = ABCStack()
+class ABCStack(object):
+    def __init__(self, classes):
+        self.layers = []
+
+        for index, layer_class in enumerate(classes):
+            if index > 0:
+                self.layers.append(layer_class(below_queue = self.layers[index-1].above_queue))
+            else:
+                self.layers.append(layer_class())
 
 if __name__ == '__main__':
-    main()
+    abc = ABCStack([PhysicalLayer, DatalinkLayer])

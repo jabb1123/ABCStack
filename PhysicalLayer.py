@@ -8,8 +8,8 @@ from queue import Queue
 from StackLayer import StackLayer
 
 class PhysicalLayer(StackLayer):
-    def __init__(self, receive_queue):
-        StackLayer.__init__(self)
+    def __init__(self, below_queue=None):
+        super().__init__(below_queue)
 
         self.input_pin = 23
         self.output_pin = 17
@@ -24,7 +24,6 @@ class PhysicalLayer(StackLayer):
         self.current_edge = None
 
         self.pulse_list = []
-        self.receive_queue = receive_queue
 
         self.stack = MorseBJStack()
 
@@ -53,7 +52,7 @@ class PhysicalLayer(StackLayer):
         # handle stop sequence
         elif (pulse[1] and pulse[0] >= 30):
             translation = self.translate(self.pulse_list)
-            self.receive_queue.put(translation)
+            self.above_queue.put(translation)
             self.reading = False
 
         elif self.reading:
@@ -67,6 +66,7 @@ class PhysicalLayer(StackLayer):
         return message
 
     def transmit(self, pulses=[(20,1), (1,0), (1,1), (1,0), (40,1)]):
+        delay(0.1) # allowing edge detection thread time to start
         prepare_pin(self.output_pin, True)
         for pulse in pulses:
             if pulse[1]:
@@ -77,17 +77,10 @@ class PhysicalLayer(StackLayer):
         turn_low(self.output_pin)
         delay(1) # for detecting the last pulse
 
-    def pass_up(self):
-        with Safeguards():
-            self.receive()
-
     def pass_down(self):
         with Safeguards():
             self.transmit()
 
-if __name__ == '__main__':
-    receive_queue = Queue()
-    layer = PhysicalLayer(receive_queue)
-    
-    delay(.01) # allowing edge detection thread to start
-    layer.pass_down()
+##if __name__ == '__main__':
+##    layer = PhysicalLayer()    
+##    layer.pass_down()
