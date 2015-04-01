@@ -62,7 +62,7 @@ class PhysicalLayer(StackLayer):
     def translate(self, pulse_list):
         # Translate pulses in queue to characters
         message = self.stack.decode(pulse_list)
-        print('Message: ' + message)
+        print('Physical: ' + message)
         return message
 
     def transmit(self, pulses=[(20,1), (1,0), (1,1), (1,0), (40,1)]):
@@ -81,6 +81,5 @@ class PhysicalLayer(StackLayer):
         with Safeguards():
             self.transmit()
 
-##if __name__ == '__main__':
-##    layer = PhysicalLayer()    
-##    layer.pass_down()
+    def receive(self):
+        pass

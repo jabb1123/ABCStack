@@ -1,4 +1,5 @@
 from StackLayer import StackLayer
+import threading
 
 class DatalinkLayer(StackLayer):
     def __init__(self, below_queue):
@@ -7,3 +8,6 @@ class DatalinkLayer(StackLayer):
     def pass_down(self):
         pass
 
+    def receive(self):
+        message = self.below_queue.get()
+        print('Datalink: ', message)
