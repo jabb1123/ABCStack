@@ -16,8 +16,7 @@ class PhysicalLayer(StackLayer):
         self.receive_rate = 1/1000;
         self.transmit_rate = 1/100;
 
-        prepare_pin(self.input_pin) 
-        #prepare_pin(self.output_pin, True)
+        prepare_pin(self.input_pin)
 
         self.reading = False
 
@@ -36,8 +35,6 @@ class PhysicalLayer(StackLayer):
         # Callback for GPIO edge detect
         
         self.current_edge = time.time()
-
-        # TODO: verify time delta accuracy
         time_passed = self.current_edge - self.previous_edge
         
         # duration and state of received pulse
@@ -68,13 +65,6 @@ class PhysicalLayer(StackLayer):
         print('Receive Queue: ' + str(layer.receive_queue.get()))
         print('Translating.')
 
-    def receive(self):
-        pass
-##        prepare_pin(self.input_pin)
-##        print('Receiving.')
-##        while True:
-##            print(layer.receive_queue.get())
-            
     def transmit(self, pulses=[(20,1), (1,0), (1,1), (1,0), (40,1)]):
         prepare_pin(self.output_pin, True)
         for pulse in pulses:
@@ -97,9 +87,6 @@ class PhysicalLayer(StackLayer):
 if __name__ == '__main__':
     receive_queue = Queue()
     layer = PhysicalLayer(receive_queue)
-    txrx = input('Enter: ')
-    if txrx == 'T':
-        layer.pass_up()
-    elif txrx == 'R':
-        layer.pass_down()
-        
+    
+    delay(.01) # allowing edge detection thread to start
+    layer.pass_down()
