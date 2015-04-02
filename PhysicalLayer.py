@@ -39,7 +39,6 @@ class PhysicalLayer(StackLayer):
         # duration and state of received pulse
         signal = 0 if GPIO.input(self.input_pin) else 1        
         pulse = (round(time_passed / self.transmit_rate), signal)
-        print(pulse)
 
         self.previous_edge = self.current_edge
 

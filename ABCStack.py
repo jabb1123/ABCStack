@@ -10,7 +10,7 @@ class ABCStack(object):
             else:
                 self.layers.append(layer_class(below_queue=None))
 
-        message = self.layers[1].pass_down('RRE') # call pass down of top layer
+        message = self.layers[1].pass_down('RRAE') # call pass down of top layer
         # TODO: Loop through layers, passing message down the stack
         self.layers[0].pass_down(message)
 
