@@ -65,7 +65,11 @@ class PhysicalLayer(StackLayer):
         print('Physical: ' + message)
         return message
 
-    def transmit(self, pulses=[(20,1), (1,0), (1,1), (1,0), (40,1)]):
+    def transmit(self, pulses=[(20,1), (1,0), # start
+                               (1,1), (1,0), (3,1), (1,0), (1,1), (1,0), (2,0), # src mac 
+                               (1,1), (1,0), (3,1), (1,0), (1,1), (1,0), (2,0), # dest mac
+                               (1,1), (1,0), # message
+                               (40,1)]): # stop
         delay(0.1) # allowing edge detection thread time to start
         prepare_pin(self.output_pin, True)
         for pulse in pulses:
