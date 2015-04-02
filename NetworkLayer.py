@@ -10,13 +10,13 @@ class NetworkLayer(StackLayer):
         self.src_ip = self.config['DEFAULT']['ip'].replace("'", "")
 
     def pass_down(self, message):
-        dest_ip = 'A' # retrieve destination IP
+        dest_ip = 'AR' # TODO: retrieve destination IP
         return self.src_ip + dest_ip + message
 
     def receive(self):
         message = self.below_queue.get()
 
-        print('Source IP:', message[0])
-        print('Dest IP:', message[1])
+        print('Source IP:', message[0:2])
+        print('Dest IP:', message[2:4])
 
-        self.above_queue.put(message[2:])
+        self.above_queue.put(message[4:])

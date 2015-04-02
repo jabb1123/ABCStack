@@ -5,14 +5,14 @@ class TransportLayer(StackLayer):
         super().__init__(below_queue)
 
     def pass_down(self, message):
-        # TODO: retrive ports
-        src_port = '1'
-        dest_port = '2'
+        # TODO: retrieve ports
+        src_port = '01'
+        dest_port = '02'
         return src_port + dest_port + message
 
     def receive(self):
         message = self.below_queue.get()
 
-        print('Source Port:', message[0])
-        print('Dest Port:', message[1])
-        print('Message:', message[2:])
+        print('Source Port:', message[0:2])
+        print('Dest Port:', message[2:4])
+        print('Message:', message[4:])
