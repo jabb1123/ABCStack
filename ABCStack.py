@@ -1,5 +1,7 @@
 from PhysicalLayer import PhysicalLayer
 from DatalinkLayer import DatalinkLayer
+from NetworkLayer import NetworkLayer
+from TransportLayer import TransportLayer
 
 class ABCStack(object):
     def __init__(self, classes):
@@ -10,9 +12,12 @@ class ABCStack(object):
             else:
                 self.layers.append(layer_class(below_queue=None))
 
-        message = self.layers[1].pass_down('RRAE') # call pass down of top layer
-        # TODO: Loop through layers, passing message down the stack
-        self.layers[0].pass_down(message)
+        self.pass_down(len(self.layers)-1, 'RRAAA12HALLO')
+
+    def pass_down(self, i, message):
+        if i < 0:
+            return
+        return self.pass_down(i-1, self.layers[i].pass_down(message))
 
 if __name__ == '__main__':
-    abc = ABCStack([PhysicalLayer, DatalinkLayer])
+    abc = ABCStack([PhysicalLayer, DatalinkLayer, NetworkLayer, TransportLayer])

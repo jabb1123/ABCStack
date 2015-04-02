@@ -21,6 +21,7 @@ class DatalinkLayer(StackLayer):
             print('Source MAC:', message[0])
             print('Dest MAC:', message[1])
             print('IP Protocol:', message[2])
-            print('Message:', message[3:])
+
+            self.above_queue.put(message[3:])
         else:
             print('Routed to', message[1])
