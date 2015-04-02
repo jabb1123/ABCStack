@@ -10,8 +10,9 @@ class ABCStack(object):
             else:
                 self.layers.append(layer_class(below_queue=None))
 
-        print('Layers Created')
-        self.layers[0].pass_down() # Test Transmit
+        message = self.layers[1].pass_down('RRE') # call pass down of top layer
+        # TODO: Loop through layers, passing message down the stack
+        self.layers[0].pass_down(message)
 
 if __name__ == '__main__':
     abc = ABCStack([PhysicalLayer, DatalinkLayer])
