@@ -11,8 +11,8 @@ class DatalinkLayer(StackLayer):
         self.src_mac = self.config['DEFAULT']['mac'].replace("'", "")
 
     def pass_down(self, message):
-        # TODO: retrieve destination MAC and IP protocol
-        dest_mac = 'R'
+        dest_mac = self.config['IPTABLE'][message[2:4]].replace("'", "")
+        # TODO: retrieve destination IP protocol
         ip_protocol = 'A'
         return self.src_mac + dest_mac + ip_protocol + message
 

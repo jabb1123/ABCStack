@@ -5,7 +5,7 @@ class TransportLayer(StackLayer):
         super().__init__(below_queue)
 
     def pass_down(self, message):
-        # TODO: retrieve ports
+        # TODO: retrieve ports from MorseSockets
         src_port = '01'
         dest_port = '02'
         return src_port + dest_port + message
