@@ -52,6 +52,7 @@ class PhysicalLayer(StackLayer):
         elif (pulse[1] and pulse[0] >= 30):
             translation = self.translate(self.pulse_list)
             self.above_queue.put(translation)
+            
             self.reading = False
 
         elif self.reading:

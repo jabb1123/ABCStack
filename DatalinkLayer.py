@@ -18,12 +18,19 @@ class DatalinkLayer(StackLayer):
 
     def receive(self):
         message = self.below_queue.get()
+        if message:            
+            if message[1] == self.src_mac:
+                print('Source MAC:', message[0])
+                print('Dest MAC:', message[1])
+                print('IP Protocol:', message[2])
 
-        if message[1] == self.src_mac:
-            print('Source MAC:', message[0])
-            print('Dest MAC:', message[1])
-            print('IP Protocol:', message[2])
+                self.above_queue.put(message[3:])
+            else:
+                print('Routed to', message[1])
 
-            self.above_queue.put(message[3:])
         else:
-            print('Routed to', message[1])
+            print('Requesting IP Address...')
+            # TODO: Grant IP Address - HOW TO ACCESS 'A'?
+            self.config['IPTABLE'][self.src_mac] = self.config['DEFAULT']['ip'].replace("'","")[0] + self.src_mac
+            print ('IP Address:', self.config['IPTABLE'][self.src_mac])
+            

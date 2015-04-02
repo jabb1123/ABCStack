@@ -12,7 +12,11 @@ class ABCStack(object):
             else:
                 self.layers.append(layer_class(below_queue=None))
 
-        self.pass_down(len(self.layers)-1, 'HI')
+        # TODO: Send blank packet to be registered in router's IPTABLE
+        self.layers[0].transmit("")
+
+        message = input('Message: ')
+        self.pass_down(len(self.layers)-1, message)
 
     def pass_down(self, i, message):
         if i < 0:
