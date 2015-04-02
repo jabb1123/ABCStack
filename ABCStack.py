@@ -12,7 +12,7 @@ class ABCStack(object):
             else:
                 self.layers.append(layer_class(below_queue=None))
 
-        self.pass_down(len(self.layers)-1, 'RRAAA12HALLO')
+        self.pass_down(len(self.layers)-1, 'HALLO')
 
     def pass_down(self, i, message):
         if i < 0:

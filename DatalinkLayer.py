@@ -1,5 +1,4 @@
 from StackLayer import StackLayer
-import threading
 import configparser
 
 class DatalinkLayer(StackLayer):
@@ -12,7 +11,10 @@ class DatalinkLayer(StackLayer):
         self.src_mac = self.config['DEFAULT']['mac'].replace("'", "")
 
     def pass_down(self, message):
-        return message
+        # TODO: retrieve destination MAC and IP protocol
+        dest_mac = 'R'
+        ip_protocol = 'A'
+        return self.src_mac + dest_mac + ip_protocol + message
 
     def receive(self):
         message = self.below_queue.get()
