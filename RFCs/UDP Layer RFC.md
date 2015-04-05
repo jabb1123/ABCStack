@@ -12,7 +12,6 @@ Checksum to be specified at a later date.
     <tr>
         <td><strong>Source Port</strong> (2 fields, Numeric)</td>
         <td><strong>Dest Port</strong> (2 field, Numeric)</td>
-        <td><strong>Packet Checksum</strong> (??)</td>
         <td><strong>Payload</strong> (Variable length, Alphanumeric)</td>
     </tr>
 </table>
