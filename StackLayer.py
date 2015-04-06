@@ -19,3 +19,11 @@ class StackLayer(object):
     @abstractmethod
     def receive(self):
         raise Exception('receive is not implemented!')
+
+    @abstractmethod
+    def append_header(self, message):
+        raise Exception('append_header is not implemented!')
+
+    @abstractmethod
+    def get_payload(self, message):
+        raise Exception('get_payload is not implemented!')

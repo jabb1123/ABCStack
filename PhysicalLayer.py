@@ -51,8 +51,7 @@ class PhysicalLayer(StackLayer):
         # handle stop sequence
         elif (pulse[1] and pulse[0] >= 30):
             translation = self.translate(self.pulse_list)
-            self.above_queue.put(translation)
-            
+            self.above_queue.put(self.get_payload(translation))
             self.reading = False
 
         elif self.reading:
@@ -67,8 +66,9 @@ class PhysicalLayer(StackLayer):
 
     def transmit(self, message):
         # append start and end sequences to encoded message
-        pulses = [(20,1), (1,0)] + self.stack.encode(message) + [(40,1)]
-        print(pulses)
+
+        pulses = self.append_header(self.stack.encode(message))
+
         delay(0.1) # allowing edge detection thread time to start
         prepare_pin(self.output_pin, True)
         for pulse in pulses:
@@ -86,3 +86,9 @@ class PhysicalLayer(StackLayer):
 
     def receive(self):
         pass
+
+    def append_header(self, message):
+        return [(20,1), (1,0)] + message + [(40,1)]
+
+    def get_payload(self, message):
+        return message
