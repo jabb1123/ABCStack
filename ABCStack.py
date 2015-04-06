@@ -1,6 +1,8 @@
 from PhysicalLayer import PhysicalLayer
 from DatalinkLayer import DatalinkLayer
+from RouterDatalinkLayer import RouterDatalinkLayer
 from NetworkLayer import NetworkLayer
+from RouterNetworkLayer import RouterNetworkLayer
 from TransportLayer import TransportLayer
 
 class ABCStack(object):
@@ -11,16 +13,12 @@ class ABCStack(object):
                 self.layers.append(layer_class(below_queue=self.layers[index-1].above_queue))
             else:
                 self.layers.append(layer_class(below_queue=None))
-
-        # TODO: Send blank packet to be registered in router's IPTABLE
-
-        message = input('Message: ')
-        self.pass_down(len(self.layers)-1, message)
-
+    
     def pass_down(self, i, message):
         if i < 0:
             return
         return self.pass_down(i-1, self.layers[i].pass_down(message))
 
-if __name__ == '__main__':
-    abc = ABCStack([PhysicalLayer, DatalinkLayer, NetworkLayer, TransportLayer])
+    def prompt(self):
+        message = input('Message: ')
+        self.pass_down(len(self.layers)-1, message)

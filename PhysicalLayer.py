@@ -66,7 +66,6 @@ class PhysicalLayer(StackLayer):
 
     def transmit(self, message):
         # append start and end sequences to encoded message
-
         pulses = self.append_header(self.stack.encode(message))
 
         delay(0.1) # allowing edge detection thread time to start

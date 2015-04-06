@@ -31,7 +31,7 @@ class DatalinkLayer(StackLayer):
         try:
             dest_mac = self.iptable['DEFAULT'][message[2:4]].replace("'", "")
         except:
-            dest_mac = self.config['DEFAULT']['router']
+            dest_mac = self.config['DEFAULT']['router'].replace("'", "")
         ip_protocol = 'A' # TODO: retrive IP Protocol from header
 
         return self.src_mac + dest_mac + ip_protocol + message

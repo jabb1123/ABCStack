@@ -17,12 +17,14 @@ class NetworkLayer(StackLayer):
 
         print('Source IP:', message[0:2])
         print('Dest IP:', message[2:4])
+        print('Check Sum:', message[4:8])
 
         self.above_queue.put(self.get_payload(message))
 
     def append_header(self, message):
         dest_ip = 'A0' # TODO: retrieve destination IP from MorseSockets Server
-        return self.src_ip + dest_ip + message
+        check_sum = 'CCCC' # TODO: implement check sum
+        return self.src_ip + dest_ip + check_sum + message
 
     def get_payload(self, message):
-        return message[4:]
+        return message[8:]
