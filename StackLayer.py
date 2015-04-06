@@ -8,8 +8,9 @@ class StackLayer(object):
     def __init__(self, below_queue):
         self.above_queue = Queue()
         self.below_queue = below_queue
-
+        
         thread = threading.Thread(target=self.receive)
+        #thread.setDaemon = False
         thread.start()
         
     @abstractmethod

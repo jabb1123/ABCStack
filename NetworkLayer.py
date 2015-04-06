@@ -7,6 +7,8 @@ class NetworkLayer(StackLayer):
 
         self.config = configparser.ConfigParser()
         self.config.read('config.ini')
+        self.iptable = configparser.ConfigParser()
+        self.iptable.read('iptable.ini')
         self.src_ip = self.config['DEFAULT']['lan'].replace("'", "") + self.config['DEFAULT']['host'].replace("'","")
     
     def pass_down(self, message):

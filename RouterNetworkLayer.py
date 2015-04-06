@@ -10,16 +10,19 @@ class RouterNetworkLayer(NetworkLayer):
         lan = self.config['DEFAULT']['lan'].replace("'","")
         host = str(len(self.iptable['DEFAULT']))
 
-        self.iptable['DEFAULT'][host] = src_mac
+        iptable_file = open('iptable.ini', 'w')
+        self.iptable.set('DEFAULT', host, message[0])
+        self.iptable.write(iptable_file)
+        iptable_file.close()
 
-        src_ip = lan + self.config['DEFAULT']["host"].replace("'","") 
+        src_ip = lan + self.config['DEFAULT']['host'].replace("'","") 
         dest_ip = lan + host
 
         # TODO: Calculate checksum
         check_sum = 'CCCC'
 
-        message = message[0:3] + src_ip + dest_ip + check_sum + " "
-        self.pass_down(message)
+        message = message[0:3] + src_ip + dest_ip + check_sum + message[11:]
+        #self.pass_down(message)
 
         print('Router Network Receive:', message) 
 

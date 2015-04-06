@@ -1,4 +1,4 @@
-import ABCStack as stack
+import RouterABCStack as stack
 import configparser
 
 if __name__ == '__main__':
@@ -11,5 +11,5 @@ if __name__ == '__main__':
     if not iptable.has_option('DEFAULT', '0'):
         iptable['DEFAULT']['0'] = config['DEFAULT']['mac'].replace("'", "")
     
-    abc = stack.ABCStack([stack.PhysicalLayer, stack.RouterDatalinkLayer, stack.RouterNetworkLayer])
+    abc = stack.RouterABCStack([stack.PhysicalLayer, stack.RouterDatalinkLayer])
     

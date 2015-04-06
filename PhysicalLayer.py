@@ -66,6 +66,7 @@ class PhysicalLayer(StackLayer):
 
     def transmit(self, message):
         # append start and end sequences to encoded message
+        print('MESSAGE ABOUT TO TRANSMIT: ', message)
         pulses = self.append_header(self.stack.encode(message))
 
         delay(0.1) # allowing edge detection thread time to start
@@ -80,8 +81,8 @@ class PhysicalLayer(StackLayer):
         delay(1) # for detecting the last pulse
 
     def pass_down(self, message):
-        with Safeguards():
-            self.transmit(message)
+        #with Safeguards():
+        self.transmit(message)
 
     def receive(self):
         pass
