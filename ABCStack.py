@@ -13,12 +13,15 @@ class ABCStack(object):
                 self.layers.append(layer_class(below_queue=self.layers[index-1].above_queue))
             else:
                 self.layers.append(layer_class(below_queue=None))
-    
+
     def pass_down(self, i, message):
         if i < 0:
             return
         return self.pass_down(i-1, self.layers[i].pass_down(message))
 
-    def prompt(self):
-        message = input('Message: ')
+    def prompt(self, informational=False):
+        if informational:
+            message = " "
+        else:
+            message = input('Message: ')
         self.pass_down(len(self.layers)-1, message)
