@@ -9,7 +9,7 @@ class NetworkLayer(StackLayer):
         self.config.read('config.ini')
         self.iptable = configparser.ConfigParser()
         self.iptable.read('iptable.ini')
-        self.src_ip = self.config['DEFAULT']['lan'].replace("'", "") + self.config['DEFAULT']['host'].replace("'","")
+        self.src_ip = self.config['CONFIG']['lan'].replace("'", "") + self.config['DEFAULT']['host'].replace("'","")
 
     def pass_down(self, message):
         return self.append_header(message)
@@ -27,8 +27,8 @@ class NetworkLayer(StackLayer):
         if src_host == " ":
             #STORE INFORMATION
             config_file = open('config.ini', 'w')
-            self.config.set('DEFAULT', 'lan', dest_lan)
-            self.config.set('DEFAULT', 'host', dest_host)
+            self.config.set('CONFIG', 'lan', dest_lan)
+            self.config.set('CONFIG', 'host', dest_host)
             self.config.write(config_file)
             config.close()
         else:
@@ -55,7 +55,7 @@ class NetworkLayer(StackLayer):
 
             #ADD MESSAGE TO CACHE
             iptable_file = open('iptable.ini', 'a')
-            self.iptable.set('DEFAULT', host, temp_mac)
+            self.iptable.set('IPTABLE', host, temp_mac)
             self.iptable.write(iptable_file)
             iptable_file.close()
 

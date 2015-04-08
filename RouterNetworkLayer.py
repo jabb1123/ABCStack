@@ -7,15 +7,15 @@ class RouterNetworkLayer(NetworkLayer):
         message=self.below_queue.get()
 
         #creating new ip for newly connected pi
-        lan = self.config['DEFAULT']['lan'].replace("'","")
-        host = str(len(self.iptable['DEFAULT']))
+        lan = self.config['CONFIG']['lan'].replace("'","")
+        host = str(len(self.iptable['IPTABLE']))
 
         iptable_file = open('iptable.ini', 'w')
-        self.iptable.set('DEFAULT', host, message[0])
+        self.iptable.set('IPTABLE', host, message[0])
         self.iptable.write(iptable_file)
         iptable_file.close()
 
-        src_ip = lan + self.config['DEFAULT']['host'].replace("'","") 
+        src_ip = lan + self.config['CONFIG']['host'].replace("'","") 
         dest_ip = lan + host
 
         # TODO: Calculate checksum

@@ -19,11 +19,11 @@ class RouterDatalinkLayer(DatalinkLayer):
                 set_ip_protocol = "C"
 
                 #creating new ip for newly connected pi
-                lan = self.config['DEFAULT']['lan'].replace("'","")
-                host = str(len(self.iptable['DEFAULT']))
+                lan = self.config['CONFIG']['lan'].replace("'","")
+                host = str(len(self.iptable['IPTABLE']))
 
                 iptable_file = open('iptable.ini', 'a')
-                self.iptable.set('DEFAULT', host, message[0])
+                self.iptable.set('IPTABLE', host, message[0])
                 self.iptable.write(iptable_file)
                 iptable_file.close()
 
@@ -44,7 +44,7 @@ class RouterDatalinkLayer(DatalinkLayer):
             elif message[1] == self.src_mac:
                 dest_lan = message[5]
                 dest_host = message[6]
-                message = message[0] + self.iptable['DEFAULT'][dest_host] + message[2:]
+                message = message[0] + self.iptable['IPTABLE'][dest_host] + message[2:]
 
                 print('Router Data Link Receive (To R):', message)
 

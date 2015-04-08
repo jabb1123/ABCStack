@@ -81,8 +81,8 @@ class PhysicalLayer(StackLayer):
         delay(1) # for detecting the last pulse
 
     def pass_down(self, message):
-        #with Safeguards():
-        self.transmit(message)
+        with Safeguards():
+            self.transmit(message)
 
     def receive(self):
         pass

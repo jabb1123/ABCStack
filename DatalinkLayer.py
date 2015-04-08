@@ -11,7 +11,7 @@ class DatalinkLayer(StackLayer):
         self.iptable = configparser.ConfigParser()
         self.iptable.read('iptable.ini')
 
-        self.src_mac = self.config['DEFAULT']['mac'].replace("'", "")
+        self.src_mac = self.config['CONFIG']['mac'].replace("'", "")
 
     def pass_down(self, message):
         return self.append_header(message)
@@ -27,7 +27,7 @@ class DatalinkLayer(StackLayer):
             if ip_protocol == "C":
                 #STORE ROUTER MAC ADDRESS
                 config_file = open('config.ini', 'w')
-                self.config.set('DEFAULT', 'router', dest_mac)
+                self.config.set('CONFIG', 'router', dest_mac)
                 self.config.write(config_file)
                 config.close()
             else:
@@ -46,7 +46,7 @@ class DatalinkLayer(StackLayer):
         try:
             #CHECK CACHE FOR MESSAGE
             #TODO: THIS IS BROKEN, HAVE TO ITERATE THROUGH VALUES BECAUSE IP STORES HOST AS KEY
-            dest_mac = self.iptable['DEFAULT'][message[2:4]].replace("'", "")
+            dest_mac = self.iptable['IPTABLE'][message[2:4]].replace("'", "")
         except:
             #SEND MESSAGE TO ROUTER
             """
@@ -56,7 +56,7 @@ class DatalinkLayer(StackLayer):
                       SET DEST_MAC = ' ' in order to
                       indicate informational packet.
             """
-            dest_mac = self.config['DEFAULT']['router'].replace("'", "")
+            dest_mac = self.config['CONFIG']['router'].replace("'", "")
 
         ip_protocol = 'A'
 

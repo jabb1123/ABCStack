@@ -5,8 +5,31 @@ from NetworkLayer import NetworkLayer
 from RouterNetworkLayer import RouterNetworkLayer
 from TransportLayer import TransportLayer
 
+import configparser
+
 class ABCStack(object):
     def __init__(self, classes):
+
+        iptable = configparser.ConfigParser()
+        iptable.read('iptable.ini')
+        config = configparser.ConfigParser()
+        config.read('config.ini')
+    
+        iptable_file = open('iptable.ini', 'w')
+        iptable.remove_section('IPTABLE')
+        iptable.add_section('IPTABLE')
+        iptable.write(iptable_file)
+        iptable_file.close()
+
+        config_file = open('config.ini', 'w')
+        if not config.has_section('CONFIG'):
+            config.add_section('CONFIG')
+        if not config.has_option('CONFIG', 'mac'):
+            config.set('CONFIG', 'mac', 'Z')
+            print('Set MAC Address in config.ini')
+        config.write(config_file)
+        config_file.close()
+        
         self.layers = []
         for index, layer_class in enumerate(classes):
             if index > 0:
