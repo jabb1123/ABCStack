@@ -35,7 +35,7 @@ class NetworkLayer(StackLayer):
             print('Source IP:', message[0:2])
             print('Dest IP:', message[2:4])
             print('Check Sum:', message[4:8])
-            self.create_ip_cache(create_ip_cache)
+            self.create_ip_cache(src_host)
 
             self.above_queue.put(self.get_payload(message))
 
