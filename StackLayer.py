@@ -14,7 +14,7 @@ class StackLayer(object):
         thread.start()
         
     @abstractmethod
-    def pass_down (self):
+    def pass_down (self, message):
         raise Exception('pass_down is not implemented!')
 
     @abstractmethod

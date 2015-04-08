@@ -1,7 +1,7 @@
 from StackLayer import StackLayer
 import configparser
 
-class NetworkLayer(StackLayer):
+class NetworkTransportLayer(StackLayer):
     def __init__(self, below_queue):
         super().__init__(below_queue)
 
@@ -42,7 +42,7 @@ class NetworkLayer(StackLayer):
     def append_header(self, message):
         dest_ip = 'A0' # TODO: retrieve destination IP from MorseSockets Server
         check_sum = 'CCCC' # TODO: implement check sum
-        return self.src_ip + dest_ip + check_sum + message
+        return src_port + dest_port + self.src_ip + dest_ip + check_sum + message
 
     def get_payload(self, message):
         return message[8:]
