@@ -9,7 +9,7 @@ class NetworkLayer(StackLayer):
         self.config.read('config.ini')
         self.iptable = configparser.ConfigParser()
         self.iptable.read('iptable.ini')
-        self.src_ip = self.config['CONFIG']['lan'].replace("'", "") + self.config['DEFAULT']['host'].replace("'","")
+        self.src_ip = self.config['CONFIG']['lan'].replace("'", "") + self.config['CONFIG']['host'].replace("'","")
 
     def pass_down(self, message):
         return self.append_header(message)
