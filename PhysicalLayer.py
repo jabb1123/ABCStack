@@ -15,7 +15,10 @@ class PhysicalLayer(StackLayer):
         self.receive_rate = 1/1200;
         self.transmit_rate = 1/120;
 
-        prepare_pin(self.input_pin)
+        GPIO.setmode(GPIO.BCM)  #use Broadcom (BCM) GPIO numbers on breakout pcb
+
+        prepare_pin(self.input_pin, False)
+        prepare_pin(self.output_pin, True)
 
         self.reading = False
 
@@ -45,11 +48,13 @@ class PhysicalLayer(StackLayer):
         if (pulse[1] and pulse[0] > 15 and pulse[0] <= 20):
             # reset queue of pulses for new transmission
             self.pulse_list = []
+            print("recieving")
             self.reading = True
 
         # handle stop sequence
         elif (pulse[1] and pulse[0] >= 30):
             translation = self.translate(self.pulse_list)
+            print("TRANSLATED BEFORE PUSH UP: " + str(translation))
             self.above_queue.put(self.get_payload(translation))
             self.reading = False
 
@@ -69,7 +74,6 @@ class PhysicalLayer(StackLayer):
         pulses = self.append_header(self.stack.encode(message))
 
         delay(0.1) # allowing edge detection thread time to start
-        prepare_pin(self.output_pin, True)
         for pulse in pulses:
             if pulse[1]:
                 turn_high(self.output_pin)
