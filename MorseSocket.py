@@ -172,7 +172,7 @@ class SocketServerLayer (StackLayer):
         to the requesting morstackclient if the address is not available
         """
         
-        if request_addr in self.port_map.itervalues():
+        if request_addr in self.port_map.values():
             exception = "Port in use"
         elif request_addr[1] > _PORT_CAP:
             exception = "Port number out of range. Ports numbers must be >0 and <{}".format(_PORT_CAP)
@@ -208,7 +208,7 @@ class SocketServerLayer (StackLayer):
         self.sendException("No ports available", addr)
         
     def close(self, addr):
-        del self.port_map[addr[1]]  # Close port reservation
+        if addr[1] in self.port_map: del self.port_map[addr[1]]  # Close port reservation
     
     def sendException(self, desc, addr):
         self.sock.sendto(serialize("exception", {"desc": desc}), addr)
