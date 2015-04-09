@@ -23,14 +23,11 @@ class RouterDatalinkLayer(DatalinkLayer):
                      self.config.read('config.ini')
                      lan = self.config['CONFIG']['lan'].replace("'","")
                      host = str(len(self.iptable['IPTABLE']))
-
                      
-                     self.iptable.set('IPTABLE', host, message[0])
-                     with open('iptable.ini', 'a') as ip_file:
-                         self.iptable.write(ip_file)
-                     #iptable_file = open('iptable.ini', 'a')
-                     #self.iptable.write(iptable_file)
-                     #iptable_file.close()
+                     iptable_file = open('iptable.ini', 'w')
+                     self.iptable.set('IPTABLE', host, message[0])          
+                     self.iptable.write(iptable_file)
+                     iptable_file.close()
 
                      #SET SOURCE_HOST BLANK TO INDICATE INFO PACKET TO CLIENT
                      #src_ip = lan + self.config['DEFAULT']['host'].replace("'","")
@@ -40,6 +37,7 @@ class RouterDatalinkLayer(DatalinkLayer):
                      # TODO: Calculate checksum
                      check_sum = 'CCCC'
 
+                     print("DEST MAC: " + dest_mac)
                      message = self.src_mac + dest_mac + set_ip_protocol + src_ip + dest_ip + check_sum + message[11:]
                      print('MESSAGE TO BE SENT: ', message)
 

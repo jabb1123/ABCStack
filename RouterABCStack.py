@@ -18,4 +18,6 @@ class RouterABCStack(ABCStack):
         iptable_file.close()
 
         message = self.layers[len(self.layers)-1].above_queue.get()
-        self.pass_down(len(self.layers)-1, message)
+        print("STACK RECEIVED: " + message)
+        #SENDING MESSAGE FROM DATALINKLAYER TO PHYSICAL
+        self.pass_down(len(self.layers)-2, message)
