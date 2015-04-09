@@ -5,8 +5,9 @@ from NetworkTransportLayer import NetworkTransportLayer
 from RouterNetworkLayer import RouterNetworkLayer
 from MorseSocket import SocketServerLayer
 import RPi.GPIO as GPIO
-
+import queue
 import configparser
+import threading
 
 class ABCStack(object):
     def __init__(self, classes):
@@ -35,13 +36,25 @@ class ABCStack(object):
             config.set('CONFIG', 'host', '0')
         config.write(config_file)
         config_file.close()
+
+        self.sockets_queue = queue.Queue()
+        socket_queue_thread = threading.Thread(target=self.start_pass_down)
+        socket_queue_thread.start()
         
         self.layers = []
+        last_layer = len(classes)-1
         for index, layer_class in enumerate(classes):
             if index > 0:
                 self.layers.append(layer_class(below_queue=self.layers[index-1].above_queue))
+                if index == last_layer:
+                    layer_class.sockets_message = self.sockets_queue
             else:
                 self.layers.append(layer_class(below_queue=None))
+
+    def start_pass_down(self):
+        while True:
+            message = self.sockets_queue.get()
+            return self.pass_down(len(self.layers)-2, message)
 
     def pass_down(self, i, message):
         if i < 0:
@@ -53,4 +66,4 @@ class ABCStack(object):
             message = " "
         else:
             message = input('Message: ')
-        self.pass_down(len(self.layers)-1, message)
+        self.pass_down(len(self.layers)-2, message)

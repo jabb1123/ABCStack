@@ -3,6 +3,7 @@ import json
 import queue
 import threading
 from StackLayer import StackLayer
+import configparser 
 
 # Move constants to this namespace
 AF_INET = sb.AF_INET
@@ -33,6 +34,8 @@ class socket(sb.socketbase):
         self.sock = sb.CN_Socket(2, 2)
         self.recv_thread = threading.Thread(target=self._internalRecv)
         self.recv_thread.start()
+
+        print("SOCKET THREAD")
         
         # Register this process with the morsockserver
         self._sendCmd("register")
@@ -80,7 +83,7 @@ class socket(sb.socketbase):
         
 class SocketServerLayer (StackLayer):
     
-    def __init__(self, addr=_MORSOCK_SERVER_ADDR, verbose=False):
+    def __init__(self, below_queue, sockets_message=None, addr=_MORSOCK_SERVER_ADDR, verbose=False):
         self.verbose = verbose
         self.port_map = {}
         self.port_counter = 0
@@ -96,17 +99,21 @@ class SocketServerLayer (StackLayer):
         self.iptable = configparser.ConfigParser()
         self.iptable.read('iptable.ini')
         self.src_ip = self.config['CONFIG']['lan'].replace("'", "") + self.config['CONFIG']['host'].replace("'","")
+
+
+        self.sock = sb.CN_Socket(2,2)
+        self.sock.bind(addr)
         
-        with sb.CN_Socket(2, 2) as self.sock:
-            self.sock.bind(addr)          
-            while True:
-                data, addr = self.sock.recvfrom(8192)
-                cmd_obj = deserialize(data)
-                cmd_obj['params']['addr'] = addr
-                self.CMD_MAP[cmd_obj['instruction']](**cmd_obj['params'])
-                if self.verbose: print("Received the command {} from {}".format(data, addr))
-                
-        self.sock.close()
+        rpc_listen = threading.Thread(target=self.receive_rpc)
+        rpc_listen.start()           
+
+    def receive_rpc(self):
+        while True:
+            data, addr = self.sock.recvfrom(8192)
+            cmd_obj = deserialize(data)
+            cmd_obj['params']['addr'] = addr
+            self.CMD_MAP[cmd_obj['instruction']](**cmd_obj['params'])
+            if self.verbose: print("Received the command {} from {}".format(data, addr))
 
     def receive(self):
         """
@@ -140,6 +147,7 @@ class SocketServerLayer (StackLayer):
 
         
     def pass_down(self, message, dest_addr, addr):
+        
         morse_source_port = str(self.port_map[addr[1]])
         morse_dest_port = str(dest_addr[1])
         morse_dest_ip = sb.ipv42morse(dest_addr[0])
@@ -151,8 +159,9 @@ class SocketServerLayer (StackLayer):
 
         checksum = 'CCCC'
         transport = morse_source_port + morse_dest_port + message
-
-        return self.src_ip + morse_dest_ip + sb.SOCK_DGRAM + checksum + transport
+        message = self.src_ip + morse_dest_ip + sb.SOCK_DGRAM + checksum + transport
+        self.sockets_message.put(message)
+        return message
 
     def bind(self, request_addr, addr):
         """
