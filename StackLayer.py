@@ -10,7 +10,6 @@ class StackLayer(object):
         self.below_queue = below_queue
         
         thread = threading.Thread(target=self.receive)
-        #thread.setDaemon = False
         thread.start()
         
     @abstractmethod

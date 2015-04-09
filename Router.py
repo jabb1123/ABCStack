@@ -1,15 +1,11 @@
 import RouterABCStack as stack
 import configparser
+import atexit
+import RPi.GPIO as GPIO
+import time
 
 if __name__ == '__main__':
-
-    iptable = configparser.ConfigParser()
-    iptable.read('iptable.ini')
-    config = configparser.ConfigParser()
-    config.read('config.ini')
-
-    if not iptable.has_option('DEFAULT', '0'):
-        iptable['DEFAULT']['0'] = config['DEFAULT']['mac'].replace("'", "")
-    
+    atexit.register(GPIO.cleanup)
     abc = stack.RouterABCStack([stack.PhysicalLayer, stack.RouterDatalinkLayer])
-    
+    while True:
+        time.sleep(1000000)

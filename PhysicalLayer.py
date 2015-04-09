@@ -10,7 +10,6 @@ from StackLayer import StackLayer
 class PhysicalLayer(StackLayer):
     def __init__(self, below_queue=None):
         super().__init__(below_queue)
-
         self.input_pin = 23
         self.output_pin = 17
         self.receive_rate = 1/1200;

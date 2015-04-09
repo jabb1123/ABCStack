@@ -62,7 +62,7 @@ class SocketServerLayer (StackLayer):
         self.port_map = {}
         self.port_counter = 0
         self.CMD_MAP = {
-            "sendto" : self.passDown,
+            "sendto" : self.pass_down,
             "bind" : self.bind,
             "register" : self.register,
             "close" : self.close
@@ -79,13 +79,10 @@ class SocketServerLayer (StackLayer):
                 
         self.sock.close()
 
-    def passUp(self, msg):
-        """
-        Grab IP/Port data and forward through internal socket to the
-        related process in the port_map.
-        """
-        pass
-           
+    def receive(self):
+        message = self.below_queue.get()
+        
+
     def pass_down(self, message):
         return self.append_header(message)
 
@@ -144,6 +141,7 @@ class SocketServerLayer (StackLayer):
     def sendException(self, desc, addr):
         self.sock.sendto(serialize("exception", {"desc": desc}), addr)
         
+
 def serialize(instruction, parameters={}):
     return json.dumps(
         {"instruction": instruction,
