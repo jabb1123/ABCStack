@@ -32,10 +32,11 @@ class RouterABCStack(ABCStack):
         self.layers[0].pass_down(trimmed)
     
     def receive(self):
+        socket, AF_INET, SOCK_DGRAM = CN_Sockets.socket, CN_Sockets.AF_INET, CN_Sockets.SOCK_DGRAM
+        sock = socket(AF_INET,SOCK_DGRAM)
+        sock.bind(("127.0.0.1", 2048))
         while True:
             try:
-                socket, AF_INET, SOCK_DGRAM = CN_Sockets.socket, CN_Sockets.AF_INET, CN_Sockets.SOCK_DGRAM
-                sock = socket(AF_INET,SOCK_DGRAM)
                 bytearray_msg, source_address = sock.recvfrom(1024)
 
                 source_IP, source_port = source_address
