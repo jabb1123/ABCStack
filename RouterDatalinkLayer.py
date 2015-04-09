@@ -1,57 +1,122 @@
 from DatalinkLayer import DatalinkLayer
+import CN_Sockets
+
 
 class RouterDatalinkLayer(DatalinkLayer):
-     def receive(self):
-        while(True):
+
+    def pass_down(self, message):
+        if message:
+            return self.append_header(message)
+        return message
+
+    def append_header(self, message):
+        self.iptable.read('iptable.ini')
+        src_lan = message[0]
+        src_host = message[1]
+        dest_lan = message[2]
+        dest_host = message[3]
+        try:
+            dest_mac = self.iptable['IPTABLE'][dest_host]
+        except:
+            dest_mac = ' '
+
+        ip_protocol = 'A'
+        return self.src_mac + dest_mac + ip_protocol + message
+
+    def receive(self):
+        while True:
             message = self.below_queue.get()
             if message:
-                 self.iptable.read('iptable.ini')
-                 if message[1] == " ":
-                     print('Source MAC:', message[0])
-                     print('Dest MAC:', message[1])
-                     print('IP Protocol:', message[2])
-                     #sending back the ip to the transmiting pi
+                self.iptable.read('iptable.ini')
+                if message[1] == ' ':
+                    print ('Source MAC:', message[0])
+                    print ('Dest MAC:', message[1])
+                    print ('IP Protocol:', message[2])
 
-                     #getting src of router from config
-                     src_mac = self.src_mac
-                     dest_mac = message[0]
-                     ip_protocol = message[2]
+                     # sending back the ip to the transmiting pi
 
-                     set_ip_protocol = "C"
+                     # getting src of router from config
 
-                     #creating new ip for newly connected pi
-                     self.config.read('config.ini')
-                     lan = self.config['CONFIG']['lan'].replace("'","")
-                     host = str(len(self.iptable['IPTABLE']))
-                     
-                     iptable_file = open('iptable.ini', 'w')
-                     self.iptable.set('IPTABLE', host, message[0])          
-                     self.iptable.write(iptable_file)
-                     iptable_file.close()
+                    src_mac = self.src_mac
+                    dest_mac = message[0]
+                    ip_protocol = message[2]
 
-                     #SET SOURCE_HOST BLANK TO INDICATE INFO PACKET TO CLIENT
-                     #src_ip = lan + self.config['DEFAULT']['host'].replace("'","")
-                     src_ip = lan + " "
-                     dest_ip = lan + host
+                    set_ip_protocol = 'C'
+
+                     # creating new ip for newly connected pi
+
+                    self.config.read('config.ini')
+                    lan = self.config['CONFIG']['lan'].replace("'", '')
+                    host = str(len(self.iptable['IPTABLE']))
+
+                    iptable_file = open('iptable.ini', 'w')
+                    self.iptable.set('IPTABLE', host, message[0])
+                    self.iptable.write(iptable_file)
+                    iptable_file.close()
+
+                     # SET SOURCE_HOST BLANK TO INDICATE INFO PACKET TO CLIENT
+                     # src_ip = lan + self.config['DEFAULT']['host'].replace("'","")
+
+                    src_ip = lan + ' '
+                    dest_ip = lan + host
 
                      # TODO: Calculate checksum
-                     check_sum = 'CCCC'
 
-                     print("DEST MAC: " + dest_mac)
-                     message = self.src_mac + dest_mac + set_ip_protocol + src_ip + dest_ip + check_sum + message[11:]
-                     print('MESSAGE TO BE SENT: ', message)
+                    check_sum = 'CCCC'
 
-                     self.above_queue.put(message)
+                    print('DEST MAC: ' + dest_mac)
+                    message = self.src_mac + dest_mac + set_ip_protocol \
+                        + src_ip + dest_ip + check_sum + message[11:]
+                    print ('MESSAGE TO BE SENT: ', message)
 
-                 #CHECK TO SEE IF MATCHING ROUTER'S MAC
-                 elif message[1] == self.src_mac:
-                     dest_lan = message[5]
-                     dest_host = message[6]
+                    self.above_queue.put(message)
+                elif message[1] == self.src_mac:
 
-                     self.iptable.read('iptable.ini')
-                     message = message[0] + self.iptable['IPTABLE'][dest_host] + message[2:]
+                 # CHECK TO SEE IF MATCHING ROUTER'S MAC
 
-                     print('Router Data Link Receive (To R):', message)
+                    self.config.read('config.ini')
+                    dest_lan = message[5]
+                    dest_host = message[6]
+                    my_lan = self.config['CONFIG']['lan'].replace("'",
+                            '')
 
-                     #passing down routed message with found mac address
-                     self.above_queue.put(message)
+                    if dest_lan == my_lan:
+                        self.iptable.read('iptable.ini')
+                        
+                        try:
+                            dest_mac = self.iptable['IPTABLE'][dest_host]
+                        except:
+                            dest_mac = "1"
+                            
+                        message = message[0] + dest_mac + message[2:]
+
+                        print ('Router Data Link Receive (To R):',
+                               message)
+
+                          # passing down routed message with found mac address
+
+                        self.above_queue.put(message)
+                    else:
+                        lans = {
+                            'A': '192.168.128.103',
+                            'B': '192.168.128.110',
+                            'C': '192.168.128.111',
+                            'D': '192.168.128.102',
+                            }
+                        dest_ip = lans[dest_lan]
+                        port = 2048
+
+                         # SOCKETS CODE
+              
+                        socket, AF_INET, SOCK_DGRAM = \
+                            (CN_Sockets.socket, CN_Sockets.AF_INET,
+                             CN_Sockets.SOCK_DGRAM)
+                        sock = socket(AF_INET, SOCK_DGRAM)
+                        packet_message = message[3:]
+                        bytearray_message = bytearray(packet_message,
+                                encoding='UTF-8')
+                        bytes_sent = sock.sendto(bytearray_message,
+                                (dest_ip,port))  # this is the command to send the bytes in bytearray to the server at "Server_Address"
+
+                        print('{} bytes sent'.format(bytes_sent))  # sock_sendto returns number of bytes send.
+                        print('=== MESSAGE SENT ===' + '\n')

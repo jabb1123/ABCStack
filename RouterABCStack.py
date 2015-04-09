@@ -2,6 +2,8 @@ from ABCStack import ABCStack
 from PhysicalLayer import PhysicalLayer
 from RouterDatalinkLayer import RouterDatalinkLayer
 import configparser
+from threading import Thread
+import CN_Sockets
 
 class RouterABCStack(ABCStack):
     def __init__(self, classes):
@@ -17,7 +19,40 @@ class RouterABCStack(ABCStack):
         iptable.write(iptable_file)
         iptable_file.close()
 
+        listen_thread = Thread(target=self.receive, args=())
+        listen_thread.start()
+
         message = self.layers[len(self.layers)-1].above_queue.get()
         print("STACK RECEIVED: " + message)
         #SENDING MESSAGE FROM DATALINKLAYER TO PHYSICAL
         self.pass_down(len(self.layers)-2, message)
+        
+    def network_receive_pass_down(self, message):
+        trimmed = self.layers[1].socket_passdown(message)
+        self.layers[0].pass_down(trimmed)
+    
+    def receive(self):
+        while True:
+            try:
+                socket, AF_INET, SOCK_DGRAM = CN_Sockets.socket, CN_Sockets.AF_INET, CN_Sockets.SOCK_DGRAM
+                sock = socket(AF_INET,SOCK_DGRAM)
+                bytearray_msg, source_address = sock.recvfrom(1024)
+
+                source_IP, source_port = source_address
+
+                payload = bytearray_msg.decode("UTF-8")
+
+
+                print("\n" + "=== MESSAGE RECEIVED ===")
+                out = "\n" + payload
+                print(out)
+                print("\n" + "=== MESSAGE ENDED ===" + "\n")
+                
+                self.pass_down(len(self.layers)-1, payload)
+               
+            except timeout:
+
+                #print (".",end="",flush=True)  # if process times out, just print a "dot" and continue waiting.  The effect is to have the server print  a line of dots
+                                               # so that you can see if it's still working.
+                continue  # go wait again
+    

@@ -9,9 +9,7 @@ class Safeguards:
         print("Safe exit succeeded")
         return not any(rabc)
 
-def prepare_pin(pin=23, out=False):
-    GPIO.setmode(GPIO.BCM)  #use Broadcom (BCM) GPIO numbers on breakout pcb
-    
+def prepare_pin(pin=23, out=False):    
     if out:
         GPIO.setup(pin, GPIO.OUT, pull_up_down=GPIO.PUD_DOWN)
     else:
