@@ -34,7 +34,7 @@ class RouterABCStack(ABCStack):
     def receive(self):
         socket, AF_INET, SOCK_DGRAM = CN_Sockets.socket, CN_Sockets.AF_INET, CN_Sockets.SOCK_DGRAM
         sock = socket(AF_INET,SOCK_DGRAM)
-        sock.bind(("192.168.128.102", 2048))
+        sock.bind(("192.168.128.103", 2048))
         while True:
             try:
                 bytearray_msg, source_address = sock.recvfrom(1024)

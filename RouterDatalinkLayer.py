@@ -108,7 +108,8 @@ class RouterDatalinkLayer(DatalinkLayer):
                         print("DEST IP: " + dest_ip + " PORT: " + str(port))
 
                          # SOCKETS CODE
-              
+
+              
                         socket, AF_INET, SOCK_DGRAM = \
                             (CN_Sockets.socket, CN_Sockets.AF_INET,
                              CN_Sockets.SOCK_DGRAM)
