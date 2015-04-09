@@ -18,7 +18,6 @@ class PhysicalLayer(StackLayer):
         GPIO.setmode(GPIO.BCM)  #use Broadcom (BCM) GPIO numbers on breakout pcb
 
         prepare_pin(self.input_pin, False)
-        prepare_pin(self.output_pin, True)
 
         self.reading = False
 
@@ -62,6 +61,9 @@ class PhysicalLayer(StackLayer):
             # insert received pulse in queue
             self.pulse_list.append(pulse)
 
+        else:
+            print("dropped edge")
+
     def translate(self, pulse_list):
         # Translate pulses in queue to characters
         message = self.stack.decode(pulse_list)
@@ -72,6 +74,7 @@ class PhysicalLayer(StackLayer):
         # append start and end sequences to encoded message
         print('MESSAGE ABOUT TO TRANSMIT: ', message)
         pulses = self.append_header(self.stack.encode(message))
+        prepare_pin(self.output_pin, True)
 
         delay(0.1) # allowing edge detection thread time to start
         for pulse in pulses:
@@ -82,6 +85,7 @@ class PhysicalLayer(StackLayer):
             delay(self.transmit_rate * pulse[0])
         turn_low(self.output_pin)
         delay(1) # for detecting the last pulse
+        prepare_pin(self.output_pin, False)
 
     def pass_down(self, message):
         #with Safeguards():
