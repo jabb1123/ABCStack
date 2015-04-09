@@ -43,8 +43,8 @@ class NetworkTransportLayer(StackLayer):
 
     def append_header(self, message):
         dest_ip = 'A0' # TODO: retrieve destination IP from MorseSockets Server
-        check_sum = 'CCCC' # TODO: implement check sum
-        return src_port + dest_port + self.src_ip + dest_ip + check_sum + message
+        return message
+        # src_port + dest_port + self.src_ip + dest_ip + check_sum + message
 
     def get_payload(self, message):
         if (message):
