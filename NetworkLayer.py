@@ -53,12 +53,12 @@ class NetworkLayer(StackLayer):
         import json
         with open('temp.txt', 'r+') as tempfile:
             temp = json.load(tempfile)
-            temp_mac = temp.keys()[0]
+            temp_mac = list(temp.keys())[0]
 
             #ADD MESSAGE TO CACHE
-            iptable_file = open('iptable.ini', 'a')
+            iptable_file = open('iptable.ini', 'w')
             self.iptable.set('IPTABLE', host, temp_mac)
             self.iptable.write(iptable_file)
             iptable_file.close()
-
+            tempfile.seek(0)
             tempfile.truncate()

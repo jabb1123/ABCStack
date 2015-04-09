@@ -18,10 +18,11 @@ class DatalinkLayer(StackLayer):
 
     def receive(self):
         message = self.below_queue.get()
+        src_mac = message[0]
+        
         if message[1] == self.src_mac:
             ip_protocol = message[2]
             dest_mac = message[1]
-            src_mac = message[0]
 
             #CHECKS TO SEE IF INFORMATIONAL PROTOCOL
             if ip_protocol == "C":
@@ -35,11 +36,11 @@ class DatalinkLayer(StackLayer):
                 print('Dest MAC:', message[1])
                 print('IP Protocol:', message[2])
 
-                #TODO: STORE REFERENCE OF MESSAGE SENDER INTO CACHING MECHANISM
                 self.temp_store(src_mac)
 
         else:
             print('Routed to', message[1])
+            self.temp_store(src_mac)
 
         self.above_queue.put(self.get_payload(message))
 
