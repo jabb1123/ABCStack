@@ -8,11 +8,12 @@ class TransportLayer(StackLayer):
         return self.append_header(message)
 
     def receive(self):
-        message = self.below_queue.get()
+        while True:
+            message = self.below_queue.get()
 
-        print('Source Port:', message[0:2])
-        print('Dest Port:', message[2:4])
-        print('Message:', message[4:])
+            print('Source Port:', message[0:2])
+            print('Dest Port:', message[2:4])
+            print('Message:', message[4:])
 
     def append_header(self, message):
         # TODO: retrieve ports from MorseSockets
