@@ -38,9 +38,10 @@ class DatalinkLayer(StackLayer):
                 #TODO: STORE REFERENCE OF MESSAGE SENDER INTO CACHING MECHANISM
                 self.temp_store(src_mac)
 
-                self.above_queue.put(self.get_payload(message))
         else:
             print('Routed to', message[1])
+
+        self.above_queue.put(self.get_payload(message))
 
     def append_header(self, message):
         try:
@@ -63,7 +64,9 @@ class DatalinkLayer(StackLayer):
         return self.src_mac + dest_mac + ip_protocol + message
 
     def get_payload(self, message):
-        return message[3:]
+        if (message):
+            return message[3:]
+        return message
 
     def temp_store(self, mac):
         import json

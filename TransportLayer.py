@@ -21,4 +21,6 @@ class TransportLayer(StackLayer):
         return src_port + dest_port + message
 
     def get_payload(self, message):
-        return message[4:]
+        if (message):
+            return message[4:]
+        return message

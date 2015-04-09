@@ -37,7 +37,7 @@ class NetworkLayer(StackLayer):
             print('Check Sum:', message[4:8])
             self.create_ip_cache(src_host)
 
-            self.above_queue.put(self.get_payload(message))
+        self.above_queue.put(self.get_payload(message))
 
     def append_header(self, message):
         dest_ip = 'A0' # TODO: retrieve destination IP from MorseSockets Server
@@ -45,7 +45,9 @@ class NetworkLayer(StackLayer):
         return self.src_ip + dest_ip + check_sum + message
 
     def get_payload(self, message):
-        return message[8:]
+        if (message):
+            return message[8:]
+        return message
 
     def create_ip_cache(self, host):
         import json
