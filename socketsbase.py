@@ -62,7 +62,7 @@ class socketbase:
 
 
 # ----- SOCKETS BASE UTILITY FUNCTIONS ----- #
-def _morse2ipv4 (morse_ip):
+def morse2ipv4 (morse_ip):
     """
     Translates a morse IP address (eg. 'R0') to an ipv4 address according to
     the class agreement on ipv4 - morse mapping. The ipv4 address has its
@@ -77,7 +77,7 @@ def _morse2ipv4 (morse_ip):
     return '.'.join(ipv4)
 
 
-def _ipv42morse (ipv4):
+def ipv42morse (ipv4):
     """
     Translates an IPV4 address (eg. '192.168.82.48') to a morse address according to
     the class agreement on ipv4 - morse mapping. The morse address is two chars long
