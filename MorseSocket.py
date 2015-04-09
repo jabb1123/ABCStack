@@ -1,3 +1,4 @@
+import socket
 import socketsbase as sb
 import json
 import queue
@@ -9,6 +10,7 @@ import configparser
 AF_INET = sb.AF_INET
 SOCK_DGRAM = sb.SOCK_DGRAM
 SOCK_STREAM = sb.SOCK_STREAM
+timeout = socket.timeout
 
 # Internal Constants
 _MORSOCK_SERVER_ADDR = ('localhost', 5280)  # Default address of the morstack server
@@ -71,9 +73,9 @@ class socket(sb.socketbase):
 
     def recvfrom (self, bufsize):
         try:
-            return self.msg_queue.get(True, self.timeout)
+            return self.msg_queue.get()
         except queue.Empty:
-            raise TimeoutException("Socket recvfrom operation timed out.")
+            raise timeout("Socket recvfrom operation timed out.")
             
     def __exit__ (self, argException, argString, argTraceback):
         self.close()
