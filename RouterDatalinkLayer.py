@@ -104,11 +104,11 @@ class RouterDatalinkLayer(DatalinkLayer):
                             'D': '192.168.128.102',
                             }
                         dest_ip = lans[dest_lan]
-                        port = '2048'
+                        port = 2048
 
                          # SOCKETS CODE
-
-                        (socket, AF_INET, SOCK_DGRAM) = \
+              
+                        socket, AF_INET, SOCK_DGRAM = \
                             (CN_Sockets.socket, CN_Sockets.AF_INET,
                              CN_Sockets.SOCK_DGRAM)
                         sock = socket(AF_INET, SOCK_DGRAM)
@@ -116,7 +116,7 @@ class RouterDatalinkLayer(DatalinkLayer):
                         bytearray_message = bytearray(packet_message,
                                 encoding='UTF-8')
                         bytes_sent = sock.sendto(bytearray_message,
-                                dest_ip)  # this is the command to send the bytes in bytearray to the server at "Server_Address"
+                                (dest_ip,port))  # this is the command to send the bytes in bytearray to the server at "Server_Address"
 
                         print('{} bytes sent'.format(bytes_sent))  # sock_sendto returns number of bytes send.
                         print('=== MESSAGE SENT ===' + '\n')
