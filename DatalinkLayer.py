@@ -19,29 +19,30 @@ class DatalinkLayer(StackLayer):
     def receive(self):
         while True:
             message = self.below_queue.get()
-            src_mac = message[0]
-            
-            if message[1] == self.src_mac:
-                ip_protocol = message[2]
-                dest_mac = message[1]
+            if message:
+                src_mac = message[0]
+                
+                if message[1] == self.src_mac:
+                    ip_protocol = message[2]
+                    dest_mac = message[1]
 
-                #CHECKS TO SEE IF INFORMATIONAL PROTOCOL
-                if ip_protocol == "C":
-                    #STORE ROUTER MAC ADDRESS
-                    config_file = open('config.ini', 'w')
-                    self.config.set('CONFIG', 'router', dest_mac)
-                    self.config.write(config_file)
-                    config.close()
+                    #CHECKS TO SEE IF INFORMATIONAL PROTOCOL
+                    if ip_protocol == "C":
+                        #STORE ROUTER MAC ADDRESS
+                        config_file = open('config.ini', 'w')
+                        self.config.set('CONFIG', 'router', dest_mac)
+                        self.config.write(config_file)
+                        config.close()
+                    else:
+                        print('Source MAC:', message[0])
+                        print('Dest MAC:', message[1])
+                        print('IP Protocol:', message[2])
+
+                        self.temp_store(src_mac)
+
                 else:
-                    print('Source MAC:', message[0])
-                    print('Dest MAC:', message[1])
-                    print('IP Protocol:', message[2])
-
+                    print('Routed to', message[1])
                     self.temp_store(src_mac)
-
-            else:
-                print('Routed to', message[1])
-                self.temp_store(src_mac)
 
             self.above_queue.put(self.get_payload(message))
 

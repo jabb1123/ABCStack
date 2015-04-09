@@ -18,25 +18,26 @@ class NetworkLayer(StackLayer):
         while True:
             message = self.below_queue.get()
 
-            src_lan = message[0:1]
-            src_host = message[1:2]
+            if message:
+                src_lan = message[0:1]
+                src_host = message[1:2]
 
-            dest_lan = message[2:3]
-            dest_host = message[3:4]
+                dest_lan = message[2:3]
+                dest_host = message[3:4]
 
-            #CHECK TO SEE IF THE PACKET IS PURELY INFORMATIONAL
-            if src_host == " ":
-                #STORE INFORMATION
-                config_file = open('config.ini', 'w')
-                self.config.set('CONFIG', 'lan', dest_lan)
-                self.config.set('CONFIG', 'host', dest_host)
-                self.config.write(config_file)
-                config.close()
-            else:
-                print('Source IP:', message[0:2])
-                print('Dest IP:', message[2:4])
-                print('Check Sum:', message[4:8])
-                self.create_ip_cache(src_host)
+                #CHECK TO SEE IF THE PACKET IS PURELY INFORMATIONAL
+                if src_host == " ":
+                    #STORE INFORMATION
+                    config_file = open('config.ini', 'w')
+                    self.config.set('CONFIG', 'lan', dest_lan)
+                    self.config.set('CONFIG', 'host', dest_host)
+                    self.config.write(config_file)
+                    config.close()
+                else:
+                    print('Source IP:', message[0:2])
+                    print('Dest IP:', message[2:4])
+                    print('Check Sum:', message[4:8])
+                    self.create_ip_cache(src_host)
 
             self.above_queue.put(self.get_payload(message))
 
