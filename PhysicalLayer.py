@@ -61,9 +61,6 @@ class PhysicalLayer(StackLayer):
             # insert received pulse in queue
             self.pulse_list.append(pulse)
 
-        else:
-            print("dropped edge")
-
     def translate(self, pulse_list):
         # Translate pulses in queue to characters
         message = self.stack.decode(pulse_list)
