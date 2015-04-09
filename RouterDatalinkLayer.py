@@ -105,6 +105,7 @@ class RouterDatalinkLayer(DatalinkLayer):
                             }
                         dest_ip = lans[dest_lan]
                         port = 2048
+                        print("DEST IP: " + dest_ip + " PORT: " + str(port))
 
                          # SOCKETS CODE
               
