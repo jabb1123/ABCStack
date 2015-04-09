@@ -4,7 +4,6 @@ from RouterDatalinkLayer import RouterDatalinkLayer
 from NetworkTransportLayer import NetworkTransportLayer
 from RouterNetworkLayer import RouterNetworkLayer
 from MorseSocket import SocketServerLayer
-from TransportLayer import TransportLayer
 import RPi.GPIO as GPIO
 
 import configparser

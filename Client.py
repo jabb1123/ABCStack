@@ -6,7 +6,7 @@ import time
 
 if __name__ == '__main__':
     atexit.register(GPIO.cleanup)
-    abc = stack.ABCStack([stack.PhysicalLayer, stack.DatalinkLayer, stack.NetworkTransportLayer])
+    abc = stack.ABCStack([stack.PhysicalLayer, stack.DatalinkLayer, stack.SocketServerLayer])
     #TODO: CHECK TO SEE IF MISSING IP AND ROUTER INFORMATION
     #abc.prompt(informational=True)
     
