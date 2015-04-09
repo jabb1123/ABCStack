@@ -10,7 +10,6 @@ from StackLayer import StackLayer
 class PhysicalLayer(StackLayer):
     def __init__(self, below_queue=None):
         super().__init__(below_queue)
-
         self.input_pin = 23
         self.output_pin = 17
         self.receive_rate = 1/1200;
@@ -81,8 +80,8 @@ class PhysicalLayer(StackLayer):
         delay(1) # for detecting the last pulse
 
     def pass_down(self, message):
-        with Safeguards():
-            self.transmit(message)
+        #with Safeguards():
+        self.transmit(message)
 
     def receive(self):
         pass
