@@ -54,14 +54,13 @@ class PhysicalLayer(StackLayer):
         elif (pulse[1] and pulse[0] >= 30):
             translation = self.translate(self.pulse_list)
             print('End Sequence Received')
-            print("TRANSLATED BEFORE PUSH UP: " + str(translation))
+            print("Translation to Datalink: " + str(translation))
             self.above_queue.put(self.get_payload(translation))
             self.reading = False
 
         elif self.reading:
             # insert received pulse in queue
             self.pulse_list.append(pulse)
-            print('Received Pulse:', pulse)
 
     def translate(self, pulse_list):
         # Translate pulses in queue to characters
@@ -71,7 +70,7 @@ class PhysicalLayer(StackLayer):
 
     def transmit(self, message):
         # append start and end sequences to encoded message
-        print('MESSAGE ABOUT TO TRANSMIT:', message)
+        print('Preparing to Transmit:', message)
         
         pulses = self.append_header(self.stack.encode(message))
         prepare_pin(self.output_pin, True)
@@ -84,13 +83,14 @@ class PhysicalLayer(StackLayer):
                 turn_low(self.output_pin)
             delay(self.transmit_rate * pulse[0])
         turn_low(self.output_pin)
+        
+        prepare_pin(self.output_pin, False)
         delay(1) # for detecting the last pulse
 
         print('Transmitting:', pulses)
-        prepare_pin(self.output_pin, False)
 
     def pass_down(self, message):
-        #with Safeguards():
+        print('Passing from Physical to Bus:', message)
         self.transmit(message)
 
     def receive(self):

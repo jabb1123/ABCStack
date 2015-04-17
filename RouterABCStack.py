@@ -21,11 +21,12 @@ class RouterABCStack(ABCStack):
 
         listen_thread = Thread(target=self.receive, args=())
         listen_thread.start()
-
-        message = self.layers[len(self.layers)-1].above_queue.get()
-        print("STACK RECEIVED: " + message)
-        #SENDING MESSAGE FROM DATALINKLAYER TO PHYSICAL
-        self.pass_down(len(self.layers)-2, message)
+        
+        while(True):
+            message = self.layers[len(self.layers)-1].above_queue.get()
+            print("STACK RECEIVED: " + message)
+            #SENDING MESSAGE FROM DATALINKLAYER TO PHYSICAL
+            self.pass_down(len(self.layers)-2, message)
         
     def network_receive_pass_down(self, message):
         trimmed = self.layers[1].socket_passdown(message)

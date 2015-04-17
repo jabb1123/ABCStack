@@ -5,7 +5,9 @@ import CN_Sockets
 class RouterDatalinkLayer(DatalinkLayer):
 
     def pass_down(self, message):
+        print('Datalink Pass Down:', message)
         if message:
+            print('Passing from Datalink to Physical')
             return self.append_header(message)
         return message
 
@@ -15,6 +17,7 @@ class RouterDatalinkLayer(DatalinkLayer):
         src_host = message[1]
         dest_lan = message[2]
         dest_host = message[3]
+         
         try:
             dest_mac = self.iptable['IPTABLE'][dest_host]
         except:
@@ -79,18 +82,26 @@ class RouterDatalinkLayer(DatalinkLayer):
                     dest_lan = message[5]
                     dest_host = message[6]
                     my_lan = self.config['CONFIG']['lan'].replace("'", '')
-
+                    
+                    # if your lan is my lan ...
                     if dest_lan == my_lan:
                         self.iptable.read('iptable.ini')
-                        
+                        #iptable_file = open('iptable.ini', 'w')
+                        #self.iptable.set('IPTABLE', '1', 'B')
+                        #self.iptable.write(iptable_file)
+                        #iptable_file.close()
+                        #self.iptable.read('iptable.ini')                        
+
                         try:
+                            print('DESTINATION HOST:', str(dest_host))
                             dest_mac = self.iptable['IPTABLE'][dest_host]
                         except:
                             dest_mac = "1"
+                            print('BAD EXCEPTION. GO HOME.')
                             
                         message = message[0] + dest_mac + message[2:]
 
-                        print ('Router Data Link Receive (To R):',
+                        print ('Router Data Link Modified Message:',
                                message)
 
                           # passing down routed message with found mac address
