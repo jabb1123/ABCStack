@@ -141,7 +141,7 @@ class SocketServerLayer(StackLayer):
                     self.config.set('CONFIG', 'lan', dest_ip[0])
                     self.config.set('CONFIG', 'host', dest_ip[1])
                     self.config.write(config_file)
-                    config.close()
+                    config_file.close()
                 else:
                     print('Source IP:', message[0:2])
                     print('Dest IP:', message[2:4])

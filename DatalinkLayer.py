@@ -26,15 +26,17 @@ class DatalinkLayer(StackLayer):
                 
                 if dest_mac == self.src_mac:
                     ip_protocol = message[2]
-                    dest_mac = message[1]
 
                     #CHECKS TO SEE IF INFORMATIONAL PROTOCOL
                     if ip_protocol == "C":
+                        print('Protocol C!')
                         #STORE ROUTER MAC ADDRESS
+                        self.config.read('config.ini')
                         config_file = open('config.ini', 'w')
-                        self.config.set('CONFIG', 'router', dest_mac)
+                        self.config.set('CONFIG', 'router', src_mac)
+                        print('Source Mac:', src_mac)
                         self.config.write(config_file)
-                        config.close()
+                        config_file.close()
                     else:
                         print('Source MAC:', message[0])
                         print('Dest MAC:', message[1])
