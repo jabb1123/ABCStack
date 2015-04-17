@@ -29,7 +29,6 @@ class PhysicalLayer(StackLayer):
         self.stack = MorseBJStack()
 
         # detect rising and falling edges
-        print('Adding Edge Detect Thread')
         GPIO.add_event_detect(self.input_pin, GPIO.BOTH, callback=self.edge_found)
         
     def edge_found(self, pin):
@@ -82,8 +81,11 @@ class PhysicalLayer(StackLayer):
                 turn_low(self.output_pin)
             delay(self.transmit_rate * pulse[0])
         turn_low(self.output_pin)
-        delay(1) # for detecting the last pulse
+        
         prepare_pin(self.output_pin, False)
+        delay(1) # for detecting the last pulse
+
+        print('Transmitting:', pulses)
 
     def pass_down(self, message):
         self.transmit(message)
