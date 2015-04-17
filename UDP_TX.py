@@ -12,7 +12,7 @@ The server, runing UDP_RX, determines the client's port number from each message
 """
     
     
-    def __init__(self,Server_Address=("192.168.65.50",90)):   # create a socket instance.
+    def __init__(self,Server_Address=("192.168.65.49",90)):   # create a socket instance.
                                                             # the "address" is IPv4 address ("127.0.0.1") and port number (5280)
                                                             # "127.0.0.1" is a special IPv4 address indicating that the socket will be communicating
                                                             # over a simulated layer 1 and 2 within a single machine (Laptop or Pi)

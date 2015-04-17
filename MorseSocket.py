@@ -60,6 +60,7 @@ class socket(sb.socketbase):
         raise Exception(desc)
         
     def bind(self, addr):
+        print("BIND")
         self._sendCmd("bind", {"request_addr": addr})
         
     def close(self):
@@ -70,12 +71,15 @@ class socket(sb.socketbase):
                 "message": forcedecode(message),
                 "dest_addr": dest_address
             })
+        return len(bytearray(message))
 
     def recvfrom (self, bufsize):
-        try:
-            return self.msg_queue.get()
-        except queue.Empty:
-            raise timeout("Socket recvfrom operation timed out.")
+        if self.timeout:
+            try:
+                return self.msg_queue.get(True,self.timeout)
+            except queue.Empty:
+                raise timeout("Socket recvfrom operation timed out.")
+        return self.msg_queue.get()
             
     def __exit__ (self, argException, argString, argTraceback):
         self.close()
@@ -83,10 +87,12 @@ class socket(sb.socketbase):
         super().__exit__(argException, argString, argTraceback)
         
         
-class SocketServerLayer (StackLayer):
+class SocketServerLayer(StackLayer):
     
     def __init__(self, below_queue, sockets_message=None, addr=_MORSOCK_SERVER_ADDR, verbose=False):
+        super().__init__(below_queue)
         self.verbose = verbose
+        self.verbose = True
         self.port_map = {}
         self.port_counter = 0
         self.CMD_MAP = {
@@ -114,6 +120,7 @@ class SocketServerLayer (StackLayer):
             data, addr = self.sock.recvfrom(8192)
             cmd_obj = deserialize(data)
             cmd_obj['params']['addr'] = addr
+            print("CMD_OBJ: " + str(cmd_obj))
             self.CMD_MAP[cmd_obj['instruction']](**cmd_obj['params'])
             if self.verbose: print("Received the command {} from {}".format(data, addr))
 
@@ -124,14 +131,15 @@ class SocketServerLayer (StackLayer):
         """
         while True:
             message = self.below_queue.get()
-
+            print("message gotten from datalink: " + message)
             if message:
                 src_ip = message[0:2]
                 dest_ip = message[2:4]
-                src_port = message[4:6]
-                dest_port = message[6:8]
-
-                self.sendMessage(message, (sb.morse2ipv4(src_ip), src_port), (dest_ip, dest_port))
+                src_port = message[9:11]
+                dest_port = message[11:13]
+                print("MORSE SRC IP: " + str(sb.morse2ipv4(src_ip)))
+                print("MORSE DEST IP: " + str(sb.morse2ipv4(dest_ip)))
+                self.sendMessage(message, (sb.morse2ipv4(src_ip), src_port), (sb.morse2ipv4(dest_ip), dest_port))
 
                 #CHECK TO SEE IF THE PACKET IS PURELY INFORMATIONAL
                 if src_ip[1] == " ":
@@ -144,14 +152,15 @@ class SocketServerLayer (StackLayer):
                 else:
                     print('Source IP:', message[0:2])
                     print('Dest IP:', message[2:4])
-                    print('Check Sum:', message[4:8])
+                    print('Check Sum:', message[5:9])
                     self.create_ip_cache(src_ip[1])
 
         
     def pass_down(self, message, dest_addr, addr):
-        
+
         morse_source_port = str(self.port_map[addr[1]])
         morse_dest_port = str(dest_addr[1])
+        print("DEST_ADDR: " + str(dest_addr))
         morse_dest_ip = sb.ipv42morse(dest_addr[0])
 
         if len(morse_source_port) == 1:
@@ -171,7 +180,6 @@ class SocketServerLayer (StackLayer):
         is not already in use by another process. Returns a serialized exception
         to the requesting morstackclient if the address is not available
         """
-        
         if request_addr in self.port_map.values():
             exception = "Port in use"
         elif request_addr[1] > _PORT_CAP:
@@ -214,11 +222,16 @@ class SocketServerLayer (StackLayer):
         self.sock.sendto(serialize("exception", {"desc": desc}), addr)
 
     def sendMessage(self, message, src_addr, dest_addr):
+        print("SENDING MESSAGE TO REAL SOCKET: " + message)
+        print("SENDING SRC ADR TO REAL SOCKET: " + str(src_addr))
+        print("SENDING DEST ADR TO REAL SOCKET: " + str(dest_addr))
         for port, morse_port in self.port_map.items():
-                if dest_addr[1] == morse_port:
-                    rpc = serialize("message", {"message": message, "addr": src_addr})
-                    self.sock.sendto(rpc, ("localhost", port))
-                    break
+            print("MORSE PORT: " + str(morse_port))
+            if str(dest_addr[1]) == str(morse_port):
+                rpc = serialize("message", {"message": message, "addr": src_addr})
+                print("PORT: ", port)
+                self.sock.sendto(rpc, ("localhost", port))
+                break
 
     def create_ip_cache(self, host):
         with open('temp.txt', 'r+') as tempfile:

@@ -25,6 +25,8 @@ class NetworkTransportLayer(StackLayer):
                 dest_lan = message[2:3]
                 dest_host = message[3:4]
 
+                print("SRC_HOST")
+
                 #CHECK TO SEE IF THE PACKET IS PURELY INFORMATIONAL
                 if src_host == " ":
                     #STORE INFORMATION
