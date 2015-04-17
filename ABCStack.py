@@ -54,7 +54,7 @@ class ABCStack(object):
     def start_pass_down(self):
         while True:
             message = self.sockets_queue.get()
-            return self.pass_down(len(self.layers)-2, message)
+            self.pass_down(len(self.layers)-2, message)
 
     def pass_down(self, i, message):
         if i < 0:

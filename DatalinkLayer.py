@@ -21,8 +21,10 @@ class DatalinkLayer(StackLayer):
             message = self.below_queue.get()
             if message:
                 src_mac = message[0]
+                dest_mac = message[1]
+                dest_mac = "A"
                 
-                if message[1] == self.src_mac:
+                if dest_mac == self.src_mac:
                     ip_protocol = message[2]
                     dest_mac = message[1]
 
@@ -43,8 +45,10 @@ class DatalinkLayer(StackLayer):
                 else:
                     print('Routed to', message[1])
                     self.temp_store(src_mac)
-
+            print("GIVING MESSAGE TO SOCKETS: " + self.get_payload(message))
+            print("QUEUE BEFORE: " + str(self.above_queue.qsize()))
             self.above_queue.put(self.get_payload(message))
+            print("QUEUE AFTER: " + str(self.above_queue.qsize()))
 
     def append_header(self, message):
         try:
