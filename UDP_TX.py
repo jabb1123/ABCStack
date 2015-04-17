@@ -1,7 +1,7 @@
 
 #import CN_Sockets # CN_Sockets adds ability to interrupt "while True" loop with ctl-C
 import MorseSocket as CN_Sockets   
-
+import socketsbase as sb
             
 class UDP_TX(object):
     """ Computer Networks Lab 4: Introduction to Sockets.  UDP Transmit example.
@@ -23,8 +23,22 @@ The server, runing UDP_RX, determines the client's port number from each message
         # CN_sockets.SOCK_DGRAM is the constant 2, indicating that the programmer intends to use the Universal Datagram Protocol of the Transport Layer
 
         with socket(AF_INET,SOCK_DGRAM) as sock:  # open the socket
-          
-            
+            #GET IP FROM CONFIG
+            #import configparser
+            #self.config = configparser.ConfigParser()
+            #self.config.read('config.ini')
+            #my_lan = self.config['CONFIG']['lan']
+            #my_host = self.config['CONFIG']['host']
+            #my_morse_ip = my_lan + my_host
+            #my_ip = sb.morse2ipv4(my_morse_ip)
+            #print("MY IP: ", my_ip)
+            dest = ""
+            while not dest:
+                dest = input("Please enter server address: ")
+            dest = sb.morse2ipv4(dest)
+
+            Server_Address = (dest, Server_Address[1])
+
             print ("UDP_TX client started for UDP_Server at IP address {} on port {}".format(
                 Server_Address[0],Server_Address[1])
                    )

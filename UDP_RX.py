@@ -1,5 +1,6 @@
 #import CN_Sockets
 import MorseSocket as CN_Sockets
+import socketsbase as sb
 
 class UDP_RX(object):
     """1. READ the UDP_TX module before reading or using this one.
@@ -31,6 +32,16 @@ While waiting for a message UDP_RX to be started or to send another message, UDP
         
         
         with socket(AF_INET, SOCK_DGRAM) as sock:
+            import configparser
+            self.config = configparser.ConfigParser()
+            self.config.read('config.ini')
+            my_lan = self.config['CONFIG']['lan']
+            my_host = self.config['CONFIG']['host']
+            my_morse_ip = my_lan + my_host
+            my_ip = sb.morse2ipv4(my_morse_ip)
+            print("MY MORSE IP: ", my_morse_ip)
+            print("MY REAL IP: ", my_ip)
+            IP = my_ip
             sock.bind((IP,port))  # bind sets up a relationship in the linux
                                   # kernel between the process running
                                   # UCP_RX and the port number (5280 by default)
@@ -65,7 +76,7 @@ While waiting for a message UDP_RX to be started or to send another message, UDP
         
 
                 except timeout: 
-                    print (".")  # if process times out, just print a "dot" and continue waiting.  The effect is to have the server print  a line of dots
+                    #print (".")  # if process times out, just print a "dot" and continue waiting.  The effect is to have the server print  a line of dots
                                                    # so that you can see if it's still working.
                     continue  # go wait again
 

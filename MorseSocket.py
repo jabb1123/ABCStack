@@ -105,7 +105,6 @@ class SocketServerLayer(StackLayer):
         self.iptable.read('iptable.ini')
         self.src_ip = self.config['CONFIG']['lan'].replace("'", "") + self.config['CONFIG']['host'].replace("'","")
 
-
         self.sock = sb.CN_Socket(2,2)
         self.sock.bind(addr)
         
@@ -133,15 +132,19 @@ class SocketServerLayer(StackLayer):
                 src_port = message[9:11]
                 dest_port = message[11:13]
                 self.sendMessage(message, (sb.morse2ipv4(src_ip), src_port), (sb.morse2ipv4(dest_ip), dest_port))
-
+                self.config.read('config.ini')
                 #CHECK TO SEE IF THE PACKET IS PURELY INFORMATIONAL
                 if src_ip[1] == " ":
-                    #STORE INFORMATION
+                    #STORE MY LAN AND MY HOST INFORMATION
                     config_file = open('config.ini', 'w')
                     self.config.set('CONFIG', 'lan', dest_ip[0])
                     self.config.set('CONFIG', 'host', dest_ip[1])
                     self.config.write(config_file)
                     config_file.close()
+
+                    #SET MY SRC_IP
+                    self.config.read('config.ini')
+                    self.src_ip = self.config['CONFIG']['lan'].replace("'", "") + self.config['CONFIG']['host'].replace("'","")
                 else:
                     print('Source IP:', message[0:2])
                     print('Dest IP:', message[2:4])
@@ -160,8 +163,11 @@ class SocketServerLayer(StackLayer):
         if len(morse_dest_port) == 1:
             morse_dest_port = '0' + morse_dest_port
 
+        #TODO CALCULATE CHECKSUM
         checksum = 'CCCC'
         transport = morse_source_port + morse_dest_port + message
+
+        
         message = self.src_ip + morse_dest_ip + sb.SOCK_DGRAM + checksum + transport
         self.sockets_message.put(message)
         return message

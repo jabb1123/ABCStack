@@ -15,27 +15,31 @@ class ABCStack(object):
         iptable.read('iptable.ini')
         config = configparser.ConfigParser()
         config.read('config.ini')
-    
+        
+        
         iptable_file = open('iptable.ini', 'w')
         iptable.remove_section('IPTABLE')
         iptable.add_section('IPTABLE')
         iptable.write(iptable_file)
         iptable_file.close()
 
+        
         config_file = open('config.ini', 'w')
         if not config.has_section('CONFIG'):
             config.add_section('CONFIG')
         if not config.has_option('CONFIG', 'mac'):
-            config.set('CONFIG', 'mac', 'Z')
-            print('Set MAC Address in config.ini')
+            config.set('CONFIG', 'mac', '*')
+            print('Please set your MAC Address in config.ini')
         if not config.has_option('CONFIG', 'router'):
             config.set('CONFIG', 'router', "' '")
         if not config.has_option('CONFIG', 'lan'):
             config.set('CONFIG', 'lan', "' '")
         if not config.has_option('CONFIG', 'host'):
             config.set('CONFIG', 'host', "' '")
+        config.set('CONFIG', 'router', "' '")
         config.write(config_file)
         config_file.close()
+
 
         self.sockets_queue = queue.Queue()
         socket_queue_thread = threading.Thread(target=self.start_pass_down)
@@ -64,6 +68,6 @@ class ABCStack(object):
     def prompt(self, informational=False):
         if informational:
             message = " "
+            self.pass_down(len(self.layers)-2, message)
         else:
-            message = input('Message: ')
-        self.pass_down(len(self.layers)-2, message)
+            message = input('=== ABC Stack has initialized ===')

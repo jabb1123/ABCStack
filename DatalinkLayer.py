@@ -29,12 +29,10 @@ class DatalinkLayer(StackLayer):
 
                     #CHECKS TO SEE IF INFORMATIONAL PROTOCOL
                     if ip_protocol == "C":
-                        print('Protocol C!')
                         #STORE ROUTER MAC ADDRESS
                         self.config.read('config.ini')
                         config_file = open('config.ini', 'w')
                         self.config.set('CONFIG', 'router', src_mac)
-                        print('Source Mac:', src_mac)
                         self.config.write(config_file)
                         config_file.close()
                     else:
@@ -51,23 +49,22 @@ class DatalinkLayer(StackLayer):
             #self.above_queue.put(self.get_payload(message))
 
     def append_header(self, message):
+        ip_protocol = 'A'
+        self.iptable.read('iptable.ini')
         try:
             #CHECK CACHE FOR MESSAGE
-            #TODO: THIS IS BROKEN, HAVE TO ITERATE THROUGH VALUES BECAUSE IP STORES HOST AS KEY
-            dest_mac = self.iptable['IPTABLE'][message[2:4]].replace("'", "")
+            dest_mac = self.iptable['IPTABLE'][message[1]].replace("'", "")
         except:
             #SEND MESSAGE TO ROUTER
-            """
-            TODO: CHECK TO SEE IF ROUTER EXISTS
-                      IF ROUTER DOES NOT EXIST,
-                      MAKE IP_PROTOCOL = 'C',
-                      SET DEST_MAC = ' ' in order to
-                      indicate informational packet.
-            """
+            self.config.read('config.ini')
             dest_mac = self.config['CONFIG']['router'].replace("'", "")
+            if dest_mac == ' ':
+                #INDICATE THAT THE PACKET IS PURELY INFORMATIONAL
+                ip_protocol = 'C'
 
-        ip_protocol = 'A'
-
+        self.config.read('config.ini')
+        self.src_mac = self.config['CONFIG']['mac'].replace("'", "")
+        
         return self.src_mac + dest_mac + ip_protocol + message
 
     def get_payload(self, message):

@@ -85,8 +85,6 @@ class PhysicalLayer(StackLayer):
         prepare_pin(self.output_pin, False)
         delay(1) # for detecting the last pulse
 
-        print('Transmitting:', pulses)
-
     def pass_down(self, message):
         self.transmit(message)
 
