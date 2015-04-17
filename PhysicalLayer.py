@@ -29,11 +29,11 @@ class PhysicalLayer(StackLayer):
         self.stack = MorseBJStack()
 
         # detect rising and falling edges
+        print('Adding Edge Detect Thread')
         GPIO.add_event_detect(self.input_pin, GPIO.BOTH, callback=self.edge_found)
         
     def edge_found(self, pin):
-        # Callback for GPIO edge detect
-        
+        # Callback for GPIO edge detect        
         self.current_edge = time.time()
         time_passed = self.current_edge - self.previous_edge
         
@@ -45,15 +45,16 @@ class PhysicalLayer(StackLayer):
 
         # handle start sequence
         if (pulse[1] and pulse[0] > 15 and pulse[0] <= 20):
+            print('Start Sequence Received')
             # reset queue of pulses for new transmission
             self.pulse_list = []
-            print("recieving")
             self.reading = True
 
         # handle stop sequence
         elif (pulse[1] and pulse[0] >= 30):
+            print('Stop Sequence Received')
             translation = self.translate(self.pulse_list)
-            print("TRANSLATED BEFORE PUSH UP: " + str(translation))
+            print("Translation to Datalink: " + str(translation))
             self.above_queue.put(self.get_payload(translation))
             self.reading = False
 
@@ -69,7 +70,7 @@ class PhysicalLayer(StackLayer):
 
     def transmit(self, message):
         # append start and end sequences to encoded message
-        print('MESSAGE ABOUT TO TRANSMIT: ', message)
+        print('Ready to Transmit: ', message)
         pulses = self.append_header(self.stack.encode(message))
         prepare_pin(self.output_pin, True)
 
@@ -85,7 +86,6 @@ class PhysicalLayer(StackLayer):
         prepare_pin(self.output_pin, False)
 
     def pass_down(self, message):
-        #with Safeguards():
         self.transmit(message)
 
     def receive(self):

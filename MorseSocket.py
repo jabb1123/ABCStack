@@ -36,8 +36,6 @@ class socket(sb.socketbase):
         self.sock = sb.CN_Socket(2, 2)
         self.recv_thread = threading.Thread(target=self._internalRecv)
         self.recv_thread.start()
-
-        print("SOCKET THREAD")
         
         # Register this process with the morsockserver
         self._sendCmd("register")
@@ -60,7 +58,6 @@ class socket(sb.socketbase):
         raise Exception(desc)
         
     def bind(self, addr):
-        print("BIND")
         self._sendCmd("bind", {"request_addr": addr})
         
     def close(self):
@@ -120,7 +117,6 @@ class SocketServerLayer(StackLayer):
             data, addr = self.sock.recvfrom(8192)
             cmd_obj = deserialize(data)
             cmd_obj['params']['addr'] = addr
-            print("CMD_OBJ: " + str(cmd_obj))
             self.CMD_MAP[cmd_obj['instruction']](**cmd_obj['params'])
             if self.verbose: print("Received the command {} from {}".format(data, addr))
 
@@ -131,14 +127,11 @@ class SocketServerLayer(StackLayer):
         """
         while True:
             message = self.below_queue.get()
-            print("message gotten from datalink: " + message)
             if message:
                 src_ip = message[0:2]
                 dest_ip = message[2:4]
                 src_port = message[9:11]
                 dest_port = message[11:13]
-                print("MORSE SRC IP: " + str(sb.morse2ipv4(src_ip)))
-                print("MORSE DEST IP: " + str(sb.morse2ipv4(dest_ip)))
                 self.sendMessage(message, (sb.morse2ipv4(src_ip), src_port), (sb.morse2ipv4(dest_ip), dest_port))
 
                 #CHECK TO SEE IF THE PACKET IS PURELY INFORMATIONAL
@@ -160,7 +153,6 @@ class SocketServerLayer(StackLayer):
 
         morse_source_port = str(self.port_map[addr[1]])
         morse_dest_port = str(dest_addr[1])
-        print("DEST_ADDR: " + str(dest_addr))
         morse_dest_ip = sb.ipv42morse(dest_addr[0])
 
         if len(morse_source_port) == 1:
@@ -222,14 +214,9 @@ class SocketServerLayer(StackLayer):
         self.sock.sendto(serialize("exception", {"desc": desc}), addr)
 
     def sendMessage(self, message, src_addr, dest_addr):
-        print("SENDING MESSAGE TO REAL SOCKET: " + message)
-        print("SENDING SRC ADR TO REAL SOCKET: " + str(src_addr))
-        print("SENDING DEST ADR TO REAL SOCKET: " + str(dest_addr))
         for port, morse_port in self.port_map.items():
-            print("MORSE PORT: " + str(morse_port))
             if str(dest_addr[1]) == str(morse_port):
                 rpc = serialize("message", {"message": message, "addr": src_addr})
-                print("PORT: ", port)
                 self.sock.sendto(rpc, ("localhost", port))
                 break
 
