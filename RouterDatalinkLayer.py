@@ -28,6 +28,7 @@ class RouterDatalinkLayer(DatalinkLayer):
             message = self.below_queue.get()
             if message:
                 self.iptable.read('iptable.ini')
+                
                 if message[1] == ' ':
                     print ('Source MAC:', message[0])
                     print ('Dest MAC:', message[1])
@@ -77,8 +78,7 @@ class RouterDatalinkLayer(DatalinkLayer):
                     self.config.read('config.ini')
                     dest_lan = message[5]
                     dest_host = message[6]
-                    my_lan = self.config['CONFIG']['lan'].replace("'",
-                            '')
+                    my_lan = self.config['CONFIG']['lan'].replace("'", '')
 
                     if dest_lan == my_lan:
                         self.iptable.read('iptable.ini')

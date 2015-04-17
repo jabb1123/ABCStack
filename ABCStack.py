@@ -29,7 +29,7 @@ class ABCStack(object):
             config.set('CONFIG', 'mac', 'Z')
             print('Set MAC Address in config.ini')
         if not config.has_option('CONFIG', 'router'):
-            config.set('CONFIG', 'router', 'R')
+            config.set('CONFIG', 'router', "' '")
         if not config.has_option('CONFIG', 'lan'):
             config.set('CONFIG', 'lan', 'A')
         if not config.has_option('CONFIG', 'host'):
