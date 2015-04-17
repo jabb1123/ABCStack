@@ -31,7 +31,7 @@ class socketbase:
     def __init__ (self, network_protocol=AF_INET, transport_protocol=SOCK_DGRAM):
         self.network_protocol = network_protocol
         self.transport_protocol = transport_protocol
-        self.timeout = 0;
+        self.timeout = 2;
 
     def __enter__ (self):
         return self

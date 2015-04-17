@@ -24,7 +24,7 @@ While waiting for a message UDP_RX to be started or to send another message, UDP
     """
 
     
-    def __init__(self,IP="192.168.65.50",port=90):
+    def __init__(self,IP="192.168.65.49",port=90):
 
         socket, AF_INET, SOCK_DGRAM, timeout = CN_Sockets.socket, CN_Sockets.AF_INET, CN_Sockets.SOCK_DGRAM, CN_Sockets.timeout
         #                                      the socket class    the IPv4 address model    The UDP layer 4 protocol    The event name for a socket timout
@@ -60,12 +60,12 @@ While waiting for a message UDP_RX to be started or to send another message, UDP
                     
                     print ("\nMessage received from ip address {}, port {}:".format(
                         source_IP,source_port))
-                    print (bytearray_msg.decode("UTF-8")) # print the message sent by the user of the  UDP_TX module.
+                    print(bytearray_msg)
+                    #print (bytearray_msg.decode("UTF-8")) # print the message sent by the user of the  UDP_TX module.
         
 
                 except timeout: 
-                                
-                    print (".",end="",flush=True)  # if process times out, just print a "dot" and continue waiting.  The effect is to have the server print  a line of dots
+                    print (".")  # if process times out, just print a "dot" and continue waiting.  The effect is to have the server print  a line of dots
                                                    # so that you can see if it's still working.
                     continue  # go wait again
 
