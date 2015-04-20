@@ -149,6 +149,14 @@ class SocketServerLayer(StackLayer):
                     print('Source IP:', message[0:2])
                     print('Dest IP:', message[2:4])
                     print('Check Sum:', message[5:9])
+                    given_checksum = message[5:9]
+                    calculated_checksum = self.checksum(message[0:2] + message[2:4])
+                    print('Calculated Check Sum:', calculated_checksum)
+                    if given_checksum == calculated_checksum:
+                        print("CHECKSUM VALIDATED!")
+                    else:
+                        print("CHECKSUM NOT VALID!")
+                        
                     self.create_ip_cache(src_ip[1])
 
         
@@ -165,12 +173,36 @@ class SocketServerLayer(StackLayer):
 
         #TODO CALCULATE CHECKSUM
         checksum = 'CCCC'
+        checksum = self.checksum(self.src_ip + morse_dest_ip)
         transport = morse_source_port + morse_dest_port + message
 
         
         message = self.src_ip + morse_dest_ip + sb.SOCK_DGRAM + checksum + transport
         self.sockets_message.put(message)
         return message
+
+    def checksum(self,header):
+        xheader=[]
+        nxheader= 0
+        #convert from header to hex
+        for c in header:
+                xheader.append(hex(ord(c))[2:].zfill(2))
+        # take sum
+        for x in xheader:
+                nxheader += int(x, 16)
+
+        carry = nxheader >> 8
+        value = nxheader & 0b000011111111
+
+        bsum = value + carry
+        thing = hex(~bsum)
+        checksum = str(thing)
+        if checksum[0] == "-":
+                checksum = checksum[2:]
+        checksum = checksum[1:]
+        checksum = checksum.upper()
+        checksum = "00" + checksum
+        return checksum
 
     def bind(self, request_addr, addr):
         """

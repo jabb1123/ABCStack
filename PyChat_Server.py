@@ -50,6 +50,7 @@ can publish its port address (5280).
 
                     print("SOURCE ADDRESS: ", source_address)
                     self.clients.add(source_address) #appending the client in a unique list
+                    print("CLIENTS: ", str(self.clients))
                     print ("\nMessage received from ip address {}, port {}:".format(
                         source_IP,source_port))
                     #print (bytearray_msg.decode("UTF-8")) # print the message sent by the user of the  UDP_TX module.
@@ -67,15 +68,20 @@ can publish its port address (5280).
 
 
     def send_message_to_clients(self, source_address, bytearray_msg, sock):
-        if (len(bytearray_msg) != 0):
-            import json
-            msg = {}
+        payload = bytearray_msg[13:]
+        print("payload: ", payload)
+        print("plen: ", str(len(payload)))
+        if (len(payload) != 0):
+            print("BARRAY: ", bytearray_msg)
+            bytearray_msg = bytearray(payload, encoding="UTF-8")
+            #import json
+            #msg = {}
             #msg["PAYLOAD"] = bytearray_msg.decode("UTF-8")
-            msg["PAYLOAD"] = bytearray_msg
-            msg["SOURCE"] = source_address
-            encoded_message = json.dumps(msg)
-            bytearray_msg = bytearray(encoded_message,encoding="UTF-8")
-
+            #msg["PAYLOAD"] = bytearray_msg
+            #msg["SOURCE"] = source_address
+            #encoded_message = json.dumps(msg)
+            #bytearray_msg = bytearray(encoded_message,encoding="UTF-8")
+            print("SRC ADDRESS: ", str(source_address))
             for c in self.clients:
                 if (c != source_address):
                     bytes_sent = sock.sendto(bytearray_msg, c) # this is the command to send the bytes in bytearray to the server at "Server_Address"

@@ -25,16 +25,18 @@ class UDP_Client(object):
 
                 source_IP, source_port = source_address
 
-                import json
-                dict_message = bytearray_msg.decode("UTF-8")
-                decoded_message = json.loads(dict_message)
+                payload = bytearray_msg
 
-                payload = decoded_message["PAYLOAD"]
-                sender_IP, sender_port = decoded_message["SOURCE"]
+                #import json
+                #dict_message = bytearray_msg.decode("UTF-8")
+                #decoded_message = json.loads(dict_message)
+
+                #payload = decoded_message["PAYLOAD"]
+                #sender_IP, sender_port = decoded_message["SOURCE"]
 
 
                 print("\n" + "=== MESSAGE RECEIVED ===")
-                out = "\n" + "<" + str(sender_IP) + ":" + str(sender_port) + ">" + ": " + payload
+                out = "\n" + "<" + str(source_IP) + ":" + str(source_port) + ">" + ": " + payload
                 print(out)
                 print("\n" + "=== MESSAGE ENDED ===" + "\n")
 
